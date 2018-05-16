@@ -13,7 +13,7 @@ git clone https://github.com/pacphi/cf-get-app-details.git
 
 Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications. 
 
-> You really should bundle configuration with the application. To take some of the sting away, you might consider externalizing and encrypting this configuration.
+> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and encrypting this configuration.
 
 At a minimum you should supply values for the following keys
 
