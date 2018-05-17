@@ -103,6 +103,55 @@ cf schedule-job get-app-details-scheduled-job "0 8 ? * * "
 
 Consult the [User Guide](https://docs.pivotal.io/pcf-scheduler/1-1/using-jobs.html) for other commands.
 
+## What does the task do?
+
+Utilizes cf CLI to query foundation for application details across all organizations and spaces for which the account is authorized.  Generates an email with a couple of attachments, then sends a copy to each recipient.
+
+### Subject
+
+Sample 
+
+```
+PCF Application Inventory Report
+```
+
+### Body
+
+Sample 
+
+```
+Please find attached application inventory detail and summary reports from api.run.pivotal.io generated 2018-05-17T12:25:25.169.
+```
+
+### Attachments
+
+#### Detail
+
+Sample `app-inventory-detail.csv`
+
+```
+organization,space,application name,buildpack,stack,running instances,total instances,urls,last pushed,current state
+Northwest,cphillipson,grivet-standalone,java,cflinuxfs2,0,1,grivet-standalone.cfapps.io,2017-06-28T13:50:18,stopped
+Northwest,cphillipson,cloud-native-spring,java,cflinuxfs2,0,1,cloud-native-spring-laboured-estragon.cfapps.io,2017-12-13T12:54:18,stopped
+Northwest,cphillipson,cloud-native-spring-ui,java,cflinuxfs2,0,1,cloud-native-spring-ui-riskiest-ghee.cfapps.io,2017-12-13T13:56:26,stopped
+Northwest,cphillipson,env,dotnet,cflinuxfs2,0,1,env-overexuberant-nonopposition.cfapps.io,2017-12-11T19:50:29,stopped
+```
+
+#### Summary
+
+Sample `app-inventory-summary.csv`
+
+```
+buildpack,total
+java,20
+dotnet,6
+staticfile,2
+nodejs,3
+ruby,1
+
+total applications: 34
+total application instances: 52
+```
 
 ## Credits
 
