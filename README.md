@@ -1,6 +1,6 @@
 # Cloud Foundry Application Inventory Report
 
-This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive [Cloud Foundry Java Client](https://github.com/cloudfoundry/cf-java-client) library to generate a custom application inventory report from a target foundation provided an API endpoint and credentials.
+This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Cloud Foundry Java Client](https://github.com/cloudfoundry/cf-java-client) and [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) libraries to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
 
 
 ## Clone
@@ -109,6 +109,8 @@ Consult the [User Guide](https://docs.pivotal.io/pcf-scheduler/1-1/using-jobs.ht
 Tip of the hat to those who've gone before...
 
 * Baeldung [1](http://www.baeldung.com/spring-email), [2](http://www.baeldung.com/spring-events)
+* [John Thompson](https://springframework.guru/spring-data-mongodb-with-reactive-mongodb/)
 * [Josh Long](https://github.com/joshlong/cf-task-demo)
+* [Mohit Sinha](https://github.com/mohitsinha/spring-boot-webflux-reactive-mongo)
 * [Pas Apicella](http://theblasfrompas.blogspot.com/2017/03/run-spring-cloud-task-from-pivotal.html)
 * [Robert Watkins](https://gist.github.com/twasink/3073710)

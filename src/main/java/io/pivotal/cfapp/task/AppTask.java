@@ -1,5 +1,6 @@
 package io.pivotal.cfapp.task;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,11 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import io.pivotal.cfapp.domain.AppDetail;
+import io.pivotal.cfapp.domain.Buildpack;
+import io.pivotal.cfapp.domain.BuildpackCount;
+import io.pivotal.cfapp.repository.AppDetailAggregator;
+import io.pivotal.cfapp.repository.ReactiveAppInfoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,25 +28,34 @@ public class AppTask implements ApplicationRunner {
     
     private DefaultCloudFoundryOperations opsClient;
     private ApplicationEventPublisher applicationEventPublisher;
+    private ReactiveAppInfoRepository reactiveAppInfoRepository;
+    private AppDetailAggregator appDetailAggregator;
     
     @Autowired
     public AppTask(
             DefaultCloudFoundryOperations opsClient,
-            ApplicationEventPublisher applicationEventPublisher
+            ApplicationEventPublisher applicationEventPublisher,
+            ReactiveAppInfoRepository reactiveAppInfoRepository,
+            AppDetailAggregator appDetailAggregator
             ) {
         this.opsClient = opsClient;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.reactiveAppInfoRepository = reactiveAppInfoRepository;
+        this.appDetailAggregator = appDetailAggregator;
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<AppInfo> result = new ArrayList<>();
+        List<AppDetail> detail = new ArrayList<>();
+        List<BuildpackCount> buildpackCounts = new ArrayList<>();
         getOrganizations().toStream()
             .forEach(o -> getSpaces(o).toStream()
                     .forEach(s -> getApplications(o, s).toStream()
                             .forEach(a -> getApplicationDetail(o, s, a)
-                                            .subscribe(result::add))));
-        AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, result);
+                                            .subscribe(detail::add))));
+        reactiveAppInfoRepository.saveAll(detail).subscribe();
+        appDetailAggregator.countApplicationsByBuildpack().forEach(bc -> buildpackCounts.add(bc));
+        AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, detail, buildpackCounts);
         applicationEventPublisher.publishEvent(event);
     }
 
@@ -71,7 +86,7 @@ public class AppTask implements ApplicationRunner {
                         .map(ApplicationSummary::getName);
     }
     
-    private Mono<AppInfo> getApplicationDetail(String organization, String space, String appName) {
+    private Mono<AppDetail> getApplicationDetail(String organization, String space, String appName) {
              return DefaultCloudFoundryOperations.builder()
                 .from(opsClient)
                 .organization(organization)
@@ -79,7 +94,22 @@ public class AppTask implements ApplicationRunner {
                 .build()
                     .applications()
                         .get(GetApplicationRequest.builder().name(appName).build())
-                        .map(a -> new AppInfo(organization, space, appName, a.getBuildpack(), String.join("/", String.valueOf(a.getRunningInstances()), String.valueOf(a.getInstances())), String.join(",", a.getUrls())));
+                        .map(a -> AppDetail
+                                    .builder()
+                                        .organization(organization)
+                                        .space(space)
+                                        .appName(appName)
+                                        .buildpack(Buildpack.is(a.getBuildpack()))
+                                        .stack(a.getStack())
+                                        .runningInstances(a.getRunningInstances())
+                                        .totalInstances(a.getInstances())
+                                        .urls(String.join(",", a.getUrls()))
+                                        .lastPushed(a.getLastUploaded()
+                                                    .toInstant()
+                                                    .atZone(ZoneId.systemDefault())
+                                                    .toLocalDateTime())
+                                        .requestedState(a.getRequestedState().toLowerCase())
+                                        .build());
     }
 
 }
