@@ -143,14 +143,27 @@ Sample `app-inventory-summary.csv`
 
 ```
 buildpack,total
-java,20
+java,13
 dotnet,6
+unknown,5
 staticfile,2
-nodejs,3
-ruby,1
+nodejs,1
 
-total applications: 34
-total application instances: 52
+last pushed,application total
+1 day ago,0
+1 week ago,2
+1 month ago,8
+3 months ago,4
+6 months ago,5
+1 year ago,8
+beyond,0
+
+state,instance total
+started,18
+stopped,17
+all,35
+
+Total applications: 27
 ```
 
 ## Credits

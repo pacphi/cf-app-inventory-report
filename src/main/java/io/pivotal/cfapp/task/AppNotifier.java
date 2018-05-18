@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import io.pivotal.cfapp.config.AppSettings;
 import io.pivotal.cfapp.config.MailSettings;
 import io.pivotal.cfapp.domain.AppDetail;
+import io.pivotal.cfapp.domain.AppMetrics;
 import io.pivotal.cfapp.domain.BuildpackCount;
 
 @Component
@@ -94,7 +95,7 @@ public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
     }
     
     private String applySummaryAttachment(AppInfoRetrievedEvent event) {
-        Integer totalInstances = event.getDetail().stream().mapToInt(i -> i.getTotalInstances()).sum();
+        AppMetrics metrics = new AppMetrics(event.getDetail());
         StringBuffer attachment = new StringBuffer();
         attachment.append("\n");
         attachment.append(BuildpackCount.headers());
@@ -103,10 +104,25 @@ public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
             attachment.append(r.toCsv());
             attachment.append("\n");
         });
+    
         attachment.append("\n");
-        attachment.append("Total applications: " + String.valueOf(event.getDetail().size()));
+        attachment.append(AppMetrics.pushHeaders() + "\n");
+        attachment.append("1 day ago," + metrics.pushedInLastDay() + "\n");
+        attachment.append("1 week ago," + metrics.pushedInLastWeek() + "\n");
+        attachment.append("1 month ago," + metrics.pushedInLastMonth() + "\n");
+        attachment.append("3 months ago," + metrics.pushedInLastThreeMonths() + "\n");
+        attachment.append("6 months ago," + metrics.pushedInLastSixMonths() + "\n");
+        attachment.append("1 year ago," + metrics.pushedInLastYear() + "\n");
+        attachment.append("beyond," + metrics.pushedBeyondOneYear() + "\n");
+        
         attachment.append("\n");
-        attachment.append("Total application instances: " + String.valueOf(totalInstances));
+        attachment.append(AppMetrics.instanceStateHeaders() + "\n");
+        attachment.append("started," + metrics.totalStartedInstances()  + "\n");
+        attachment.append("stopped," + metrics.totalStoppedInstances() + "\n");
+        attachment.append("all," + metrics.totalApplicationInstances() + "\n");
+        
+        attachment.append("\n");
+        attachment.append("Total applications: " + metrics.totalApplications());
         return attachment.toString();
     }
 }
