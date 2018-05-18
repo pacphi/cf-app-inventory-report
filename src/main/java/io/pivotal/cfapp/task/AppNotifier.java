@@ -107,13 +107,13 @@ public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
     
         attachment.append("\n");
         attachment.append(AppMetrics.pushHeaders() + "\n");
-        attachment.append("1 day ago," + metrics.pushedInLastDay() + "\n");
-        attachment.append("1 week ago," + metrics.pushedInLastWeek() + "\n");
-        attachment.append("1 month ago," + metrics.pushedInLastMonth() + "\n");
-        attachment.append("3 months ago," + metrics.pushedInLastThreeMonths() + "\n");
-        attachment.append("6 months ago," + metrics.pushedInLastSixMonths() + "\n");
-        attachment.append("1 year ago," + metrics.pushedInLastYear() + "\n");
-        attachment.append("beyond," + metrics.pushedBeyondOneYear() + "\n");
+        attachment.append("<= 1 day," + metrics.pushedInLastDay() + "\n");
+        attachment.append("> 1 day <= 1 week ," + metrics.pushedInLastWeek() + "\n");
+        attachment.append("> 1 week <= 1 month," + metrics.pushedInLastMonth() + "\n");
+        attachment.append("> 1 month <= 3 months," + metrics.pushedInLastThreeMonths() + "\n");
+        attachment.append("> 3 months <= 6 months," + metrics.pushedInLastSixMonths() + "\n");
+        attachment.append("> 6 months <= 1 year," + metrics.pushedInLastYear() + "\n");
+        attachment.append("> 1 year," + metrics.pushedBeyondOneYear() + "\n");
         
         attachment.append("\n");
         attachment.append(AppMetrics.instanceStateHeaders() + "\n");
