@@ -1,13 +1,13 @@
 buildscript {
-	ext {
-		springBootVersion = '2.0.2.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext { 
+        springBootVersion = '2.0.2.RELEASE' 
+    }
+    repositories { 
+        mavenCentral() 
+    }
+    dependencies { 
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+    }
 }
 
 apply plugin: 'java'
@@ -19,24 +19,25 @@ group = 'io.pivotal'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
-repositories {
-	mavenCentral()
+repositories { 
+    mavenCentral() 
 }
 
 
 dependencies {
     compileOnly('org.projectlombok:lombok')
-	compile('org.springframework.boot:spring-boot-starter-webflux')
-	compile('org.springframework.cloud:spring-cloud-starter-task:2.0.0.RELEASE')
+    compile('org.apache.commons:commons-lang3:3.7')
+    compile('org.springframework.boot:spring-boot-starter-webflux')
+    compile('org.springframework.cloud:spring-cloud-starter-task:2.0.0.RELEASE')
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
-	compile('org.cloudfoundry:cloudfoundry-client-reactor:3.9.0.RELEASE')
-	compile('org.cloudfoundry:cloudfoundry-operations:3.9.0.RELEASE')
+    compile('org.cloudfoundry:cloudfoundry-client-reactor:3.9.0.RELEASE')
+    compile('org.cloudfoundry:cloudfoundry-operations:3.9.0.RELEASE')
     compile('io.projectreactor:reactor-core:3.1.7.RELEASE')
     compile('io.projectreactor.ipc:reactor-netty:0.7.7.RELEASE')
     compile('org.cloudfoundry:cloudfoundry-operations:3.9.0.RELEASE')
     compile('org.springframework.boot:spring-boot-configuration-processor')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('io.projectreactor:reactor-test')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('io.projectreactor:reactor-test')
 }

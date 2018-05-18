@@ -150,13 +150,13 @@ staticfile,2
 nodejs,1
 
 last pushed,application total
-1 day ago,0
-1 week ago,2
-1 month ago,8
-3 months ago,4
-6 months ago,5
-1 year ago,8
-beyond,0
+<= 1 day,0
+> 1 day <= 1 week,2
+> 1 week <= 1 month,8
+> 1 month <= 3 months,4
+> 3 months <= 6 months,5
+> 6 months <= 1 year,8
+> 1 year,0
 
 state,instance total
 started,18

@@ -108,7 +108,7 @@ public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
         attachment.append("\n");
         attachment.append(AppMetrics.pushHeaders() + "\n");
         attachment.append("<= 1 day," + metrics.pushedInLastDay() + "\n");
-        attachment.append("> 1 day <= 1 week ," + metrics.pushedInLastWeek() + "\n");
+        attachment.append("> 1 day <= 1 week," + metrics.pushedInLastWeek() + "\n");
         attachment.append("> 1 week <= 1 month," + metrics.pushedInLastMonth() + "\n");
         attachment.append("> 1 month <= 3 months," + metrics.pushedInLastThreeMonths() + "\n");
         attachment.append("> 3 months <= 6 months," + metrics.pushedInLastSixMonths() + "\n");
