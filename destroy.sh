@@ -4,4 +4,4 @@ set -e
 
 cf delete-job get-app-details-scheduled-job
 cf delete-service scheduler-for-pcf
-cf delete-task get-app-details-task
+cf delete get-app-details-task
