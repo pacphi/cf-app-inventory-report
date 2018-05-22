@@ -2,7 +2,6 @@ package io.pivotal.cfapp.task;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.cloudfoundry.operations.DefaultCloudFoundryOperations;
@@ -22,6 +21,7 @@ import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
 import io.pivotal.cfapp.repository.ReactiveAppInfoRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 public class AppTask implements ApplicationRunner {
@@ -46,29 +46,21 @@ public class AppTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<AppRequest> requests = new ArrayList<>();
         List<AppDetail> detail = new ArrayList<>();
-        List<AppDetail> enriched = new ArrayList<>();
         List<BuildpackCount> buildpackCounts = new ArrayList<>();
         getOrganizations()
             .flatMap(spacesRequest -> getSpaces(spacesRequest))
             .flatMap(appSummaryRequest -> getApplicationSummary(appSummaryRequest))
-            .subscribe(requests::add);
-        requests.forEach(appDetailRequest -> getApplicationDetail(appDetailRequest)
-                                .subscribe(detail::add)
-        );
-        reactiveAppInfoRepository.saveAll(detail)
             .toStream()
-                .forEach(ad -> { 
-                    AppEvent event = getLastAppEvent(ad);
-                    if (event != null) {
-                        ad.setLastEvent(event.getName());
-                        ad.setLastEventActor(event.getActor());
-                    }
-                    enriched.add(ad);
+                .forEach(appDetailRequest -> {
+                    getApplicationDetail(appDetailRequest)
+                        .flatMap(ad -> enrichWithAppEvent(ad))
+                        .subscribe(detail::add);
                 });
+
+        reactiveAppInfoRepository.saveAll(detail).subscribe();
         appDetailAggregator.countApplicationsByBuildpack().forEach(bc -> buildpackCounts.add(bc));
-        AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, enriched, buildpackCounts);
+        AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, detail, buildpackCounts);
         applicationEventPublisher.publishEvent(event);
     }
 
@@ -102,8 +94,8 @@ public class AppTask implements ApplicationRunner {
                     .map(as -> AppRequest.from(request).appName(as.getName()).build());
     }
     
-    private Flux<AppDetail> getApplicationDetail(AppRequest request) {
-         return Flux.from(DefaultCloudFoundryOperations.builder()
+    private Mono<AppDetail> getApplicationDetail(AppRequest request) {
+         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
             .organization(request.getOrganization())
             .space(request.getSpace())
@@ -125,11 +117,11 @@ public class AppTask implements ApplicationRunner {
                                                 .atZone(ZoneId.systemDefault())
                                                 .toLocalDateTime())
                                     .requestedState(a.getRequestedState().toLowerCase())
-                                    .build()));
+                                    .build());
     }
 
-    private AppEvent getLastAppEvent(AppDetail detail) {
-        Flux<AppEvent> events = DefaultCloudFoundryOperations.builder()
+    private Mono<AppDetail> enrichWithAppEvent(AppDetail detail) {
+        return DefaultCloudFoundryOperations.builder()
            .from(opsClient)
            .organization(detail.getOrganization())
            .space(detail.getSpace())
@@ -141,10 +133,14 @@ public class AppTask implements ApplicationRunner {
                                        .name(e.getEvent())
                                        .actor(e.getActor())
                                        .time(e.getTime())
-                                       .build());
-        return events
-                    .toStream()
-                          .max(Comparator.comparing(AppEvent::getTime))
-                              .orElse(null);
+                                       .build())
+                       .next()
+                       .map(e -> 
+                               AppDetail.from(detail)
+                                           .lastEvent(e.getName())
+                                           .lastEventActor(e.getActor())
+                                           .build()
+                           )
+                       .switchIfEmpty(Mono.just(detail));
     }
 }
