@@ -55,11 +55,10 @@ public class AppTask implements ApplicationRunner {
                 .forEach(appDetailRequest -> {
                     getApplicationDetail(appDetailRequest)
                         .flatMap(ad -> enrichWithAppEvent(ad))
-                        .subscribe(detail::add);
+                        .subscribe(reactiveAppInfoRepository::save);
                 });
-
-        reactiveAppInfoRepository.saveAll(detail).subscribe();
         appDetailAggregator.countApplicationsByBuildpack().forEach(bc -> buildpackCounts.add(bc));
+        reactiveAppInfoRepository.findAll().subscribe(detail::add);
         AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, detail, buildpackCounts);
         applicationEventPublisher.publishEvent(event);
     }
