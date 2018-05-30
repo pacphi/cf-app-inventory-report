@@ -1,8 +1,6 @@
 package io.pivotal.cfapp.task;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.cloudfoundry.operations.DefaultCloudFoundryOperations;
 import org.cloudfoundry.operations.applications.GetApplicationEventsRequest;
@@ -17,7 +15,6 @@ import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.AppEvent;
 import io.pivotal.cfapp.domain.AppRequest;
 import io.pivotal.cfapp.domain.Buildpack;
-import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
 import io.pivotal.cfapp.repository.ReactiveAppInfoRepository;
 import reactor.core.publisher.Flux;
@@ -46,21 +43,25 @@ public class AppTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<AppDetail> detail = new ArrayList<>();
-        List<BuildpackCount> buildpackCounts = new ArrayList<>();
-        getOrganizations()
-            .flatMap(spacesRequest -> getSpaces(spacesRequest))
+        reactiveAppInfoRepository
+            .deleteAll()
+            .thenMany(getOrganizations())
+            .flatMap(spaceRequest -> getSpaces(spaceRequest))
             .flatMap(appSummaryRequest -> getApplicationSummary(appSummaryRequest))
-            .toStream()
-                .forEach(appDetailRequest -> {
-                    getApplicationDetail(appDetailRequest)
-                        .flatMap(ad -> enrichWithAppEvent(ad))
-                        .doOnNext(r -> reactiveAppInfoRepository.save(r).subscribe())
-                        .subscribe(detail::add);
-                });
-        appDetailAggregator.countApplicationsByBuildpack().forEach(bc -> buildpackCounts.add(bc));
-        AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, detail, buildpackCounts);
-        applicationEventPublisher.publishEvent(event);
+            .flatMap(appDetailRequest -> getApplicationDetail(appDetailRequest))
+            .flatMap(withLastEventRequest -> enrichWithAppEvent(withLastEventRequest))
+            .flatMap(reactiveAppInfoRepository::save)
+            .thenMany(reactiveAppInfoRepository.findAll())
+            .collectList()
+            .subscribe(r -> 
+                applicationEventPublisher.publishEvent(
+                    new AppInfoRetrievedEvent(
+                            this, 
+                            r, 
+                            appDetailAggregator.countApplicationsByBuildpack()
+                    )
+                )
+            );
     }
 
     private Flux<AppRequest> getOrganizations() {
@@ -69,7 +70,8 @@ public class AppTask implements ApplicationRunner {
             .build()
                 .organizations()
                     .list()
-                    .map(os -> AppRequest.builder().organization(os.getName()).build());
+                    .map(os -> AppRequest.builder().organization(os.getName()).build())
+                    .log();
     }
     
     private Flux<AppRequest> getSpaces(AppRequest request) {
@@ -79,7 +81,8 @@ public class AppTask implements ApplicationRunner {
             .build()
                 .spaces()
                     .list()
-                    .map(ss -> AppRequest.from(request).space(ss.getName()).build());
+                    .map(ss -> AppRequest.from(request).space(ss.getName()).build())
+                    .log();
     }
     
     private Flux<AppRequest> getApplicationSummary(AppRequest request) {
@@ -90,9 +93,13 @@ public class AppTask implements ApplicationRunner {
             .build()
                 .applications()
                     .list()
-                    .map(as -> AppRequest.from(request).appName(as.getName()).build());
+                    .map(as -> AppRequest.from(request).appName(as.getName()).build())
+                    .log();
     }
     
+    // Added onErrorResume as per https://stackoverflow.com/questions/48243630/is-there-a-way-in-reactor-to-ignore-error-signals
+    // to address org.cloudfoundry.client.v2.ClientV2Exception: CF-NoAppDetectedError(170003): An app was not successfully detected by any available buildpack
+    // which results in some undesirable but tolerable data loss
     private Mono<AppDetail> getApplicationDetail(AppRequest request) {
          return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -101,6 +108,7 @@ public class AppTask implements ApplicationRunner {
             .build()
                 .applications()
                     .get(GetApplicationRequest.builder().name(request.getAppName()).build())
+                    .onErrorResume(e -> Mono.empty())
                     .map(a -> AppDetail
                                 .builder()
                                     .organization(request.getOrganization())
@@ -116,7 +124,8 @@ public class AppTask implements ApplicationRunner {
                                                 .atZone(ZoneId.systemDefault())
                                                 .toLocalDateTime())
                                     .requestedState(a.getRequestedState().toLowerCase())
-                                    .build());
+                                    .build())
+                    .log();
     }
 
     private Mono<AppDetail> enrichWithAppEvent(AppDetail detail) {
@@ -140,6 +149,7 @@ public class AppTask implements ApplicationRunner {
                                            .lastEventActor(e.getActor())
                                            .build()
                            )
-                       .switchIfEmpty(Mono.just(detail));
+                       .switchIfEmpty(Mono.just(detail))
+                       .log();
     }
 }
