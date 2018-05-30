@@ -131,10 +131,13 @@ Sample `app-inventory-detail.csv`
 
 ```
 organization,space,application name,buildpack,stack,running instances,total instances,urls,last pushed,last event,last event actor,requested state
-Northwest,cphillipson,grivet-standalone,java,cflinuxfs2,0,1,grivet-standalone.cfapps.io,2017-06-28T13:50:18,stopped
-Northwest,cphillipson,cloud-native-spring,java,cflinuxfs2,0,1,cloud-native-spring-laboured-estragon.cfapps.io,2017-12-13T12:54:18,stopped
-Northwest,cphillipson,cloud-native-spring-ui,java,cflinuxfs2,0,1,cloud-native-spring-ui-riskiest-ghee.cfapps.io,2017-12-13T13:56:26,stopped
-Northwest,cphillipson,env,dotnet,cflinuxfs2,0,1,env-overexuberant-nonopposition.cfapps.io,2017-12-11T19:50:29,stopped
+Northwest,cphillipson,cloud-native-spring-ui,java,cflinuxfs2,0,1,cloud-native-spring-ui-riskiest-ghee.cfapps.io,2017-12-13T15:56:26,,,stopped
+Northwest,sdeeg,nodefire-smd,nodejs,cflinuxfs2,1,1,nodefire-smd.cfapps.io,2018-05-03T17:14:10,,,started
+Northwest,cphillipson,cloud-native-spring,java,cflinuxfs2,0,1,cloud-native-spring-laboured-estragon.cfapps.io,2017-12-13T14:54:18,,,stopped
+zoo-labs,test,cphillipson-ruby-demo,ruby,cflinuxfs2,1,1,cphillipson-ruby-demo.cfapps.io,2018-05-29T13:25:36,audit.app.droplet.create,cphillipson@pivotal.io,started
+zoo-labs,test,cook,java,cflinuxfs2,0,1,cook-impressive-bonobo.cfapps.io,2018-05-10T16:48:18,audit.app.stop,cphillipson@pivotal.io,stopped
+Northwest,nthomson,bookstore-connector,java,cflinuxfs2,1,1,bookstore-connector.cfapps.io,2018-04-09T16:40:23,,,started
+Northwest,nthomson,bookstore-service-broker,java,cflinuxfs2,1,1,bookstore-service-broker.cfapps.io,2018-04-09T12:49:41,,,started
 ```
 
 #### Summary
