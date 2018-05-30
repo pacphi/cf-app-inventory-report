@@ -59,11 +59,11 @@ public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
         String body = applyBody();
         String detailAttachment = applyDetailAttachment(event);
         String summaryAttachment = applySummaryAttachment(event);
+        log.info(detailAttachment);
+        log.info(summaryAttachment);
         mailSettings.getRecipients().forEach(r -> {
             try {
                 sendMail(r, mailSettings.getSubject(), body, detailAttachment, summaryAttachment);
-                log.info(detailAttachment);
-                log.info(summaryAttachment);
             } catch (MessagingException | IOException e) {
                 log.error("Could not send email!", e);
             }

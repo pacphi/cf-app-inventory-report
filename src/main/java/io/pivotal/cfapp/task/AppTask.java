@@ -1,14 +1,10 @@
 package io.pivotal.cfapp.task;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.cloudfoundry.operations.DefaultCloudFoundryOperations;
-import org.cloudfoundry.operations.applications.ApplicationSummary;
+import org.cloudfoundry.operations.applications.GetApplicationEventsRequest;
 import org.cloudfoundry.operations.applications.GetApplicationRequest;
-import org.cloudfoundry.operations.organizations.OrganizationSummary;
-import org.cloudfoundry.operations.spaces.SpaceSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -16,8 +12,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.domain.AppDetail;
+import io.pivotal.cfapp.domain.AppEvent;
+import io.pivotal.cfapp.domain.AppRequest;
 import io.pivotal.cfapp.domain.Buildpack;
-import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
 import io.pivotal.cfapp.repository.ReactiveAppInfoRepository;
 import reactor.core.publisher.Flux;
@@ -46,70 +43,113 @@ public class AppTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<AppDetail> detail = new ArrayList<>();
-        List<BuildpackCount> buildpackCounts = new ArrayList<>();
-        getOrganizations().toStream()
-            .forEach(o -> getSpaces(o).toStream()
-                    .forEach(s -> getApplications(o, s).toStream()
-                            .forEach(a -> getApplicationDetail(o, s, a)
-                                            .subscribe(detail::add))));
-        reactiveAppInfoRepository.saveAll(detail).subscribe();
-        appDetailAggregator.countApplicationsByBuildpack().forEach(bc -> buildpackCounts.add(bc));
-        AppInfoRetrievedEvent event = new AppInfoRetrievedEvent(this, detail, buildpackCounts);
-        applicationEventPublisher.publishEvent(event);
+        reactiveAppInfoRepository
+            .deleteAll()
+            .thenMany(getOrganizations())
+            .flatMap(spaceRequest -> getSpaces(spaceRequest))
+            .flatMap(appSummaryRequest -> getApplicationSummary(appSummaryRequest))
+            .flatMap(appDetailRequest -> getApplicationDetail(appDetailRequest))
+            .flatMap(withLastEventRequest -> enrichWithAppEvent(withLastEventRequest))
+            .flatMap(reactiveAppInfoRepository::save)
+            .thenMany(reactiveAppInfoRepository.findAll())
+            .collectList()
+            .subscribe(r -> 
+                applicationEventPublisher.publishEvent(
+                    new AppInfoRetrievedEvent(
+                            this, 
+                            r, 
+                            appDetailAggregator.countApplicationsByBuildpack()
+                    )
+                )
+            );
     }
 
-    private Flux<String> getOrganizations() {
-        return opsClient.organizations()
-                .list()
-                .map(OrganizationSummary::getName);
-    }
-    
-    private Flux<String> getSpaces(String organization) {
+    private Flux<AppRequest> getOrganizations() {
         return DefaultCloudFoundryOperations.builder()
-                .from(opsClient)
-                .organization(organization)
-                .build()
-                    .spaces()
-                        .list()
-                        .map(SpaceSummary::getName);
+            .from(opsClient)
+            .build()
+                .organizations()
+                    .list()
+                    .map(os -> AppRequest.builder().organization(os.getName()).build())
+                    .log();
     }
     
-    private Flux<String> getApplications(String organization, String space) {
+    private Flux<AppRequest> getSpaces(AppRequest request) {
         return DefaultCloudFoundryOperations.builder()
-                .from(opsClient)
-                .organization(organization)
-                .space(space)
-                .build()
-                    .applications()
-                        .list()
-                        .map(ApplicationSummary::getName);
+            .from(opsClient)
+            .organization(request.getOrganization())
+            .build()
+                .spaces()
+                    .list()
+                    .map(ss -> AppRequest.from(request).space(ss.getName()).build())
+                    .log();
     }
     
-    private Mono<AppDetail> getApplicationDetail(String organization, String space, String appName) {
-             return DefaultCloudFoundryOperations.builder()
-                .from(opsClient)
-                .organization(organization)
-                .space(space)
-                .build()
-                    .applications()
-                        .get(GetApplicationRequest.builder().name(appName).build())
-                        .map(a -> AppDetail
-                                    .builder()
-                                        .organization(organization)
-                                        .space(space)
-                                        .appName(appName)
-                                        .buildpack(Buildpack.is(a.getBuildpack()))
-                                        .stack(a.getStack())
-                                        .runningInstances(a.getRunningInstances())
-                                        .totalInstances(a.getInstances())
-                                        .urls(String.join(",", a.getUrls()))
-                                        .lastPushed(a.getLastUploaded()
-                                                    .toInstant()
-                                                    .atZone(ZoneId.systemDefault())
-                                                    .toLocalDateTime())
-                                        .requestedState(a.getRequestedState().toLowerCase())
-                                        .build());
+    private Flux<AppRequest> getApplicationSummary(AppRequest request) {
+        return DefaultCloudFoundryOperations.builder()
+            .from(opsClient)
+            .organization(request.getOrganization())
+            .space(request.getSpace())
+            .build()
+                .applications()
+                    .list()
+                    .map(as -> AppRequest.from(request).appName(as.getName()).build())
+                    .log();
+    }
+    
+    // Added onErrorResume as per https://stackoverflow.com/questions/48243630/is-there-a-way-in-reactor-to-ignore-error-signals
+    // to address org.cloudfoundry.client.v2.ClientV2Exception: CF-NoAppDetectedError(170003): An app was not successfully detected by any available buildpack
+    // which results in some undesirable but tolerable data loss
+    private Mono<AppDetail> getApplicationDetail(AppRequest request) {
+         return DefaultCloudFoundryOperations.builder()
+            .from(opsClient)
+            .organization(request.getOrganization())
+            .space(request.getSpace())
+            .build()
+                .applications()
+                    .get(GetApplicationRequest.builder().name(request.getAppName()).build())
+                    .onErrorResume(e -> Mono.empty())
+                    .map(a -> AppDetail
+                                .builder()
+                                    .organization(request.getOrganization())
+                                    .space(request.getSpace())
+                                    .appName(request.getAppName())
+                                    .buildpack(Buildpack.is(a.getBuildpack()))
+                                    .stack(a.getStack())
+                                    .runningInstances(a.getRunningInstances())
+                                    .totalInstances(a.getInstances())
+                                    .urls(String.join(",", a.getUrls()))
+                                    .lastPushed(a.getLastUploaded()
+                                                .toInstant()
+                                                .atZone(ZoneId.systemDefault())
+                                                .toLocalDateTime())
+                                    .requestedState(a.getRequestedState().toLowerCase())
+                                    .build())
+                    .log();
     }
 
+    private Mono<AppDetail> enrichWithAppEvent(AppDetail detail) {
+        return DefaultCloudFoundryOperations.builder()
+           .from(opsClient)
+           .organization(detail.getOrganization())
+           .space(detail.getSpace())
+           .build()
+               .applications()
+                   .getEvents(GetApplicationEventsRequest.builder().name(detail.getAppName()).build())
+                       .map(e -> AppEvent
+                                   .builder()
+                                       .name(e.getEvent())
+                                       .actor(e.getActor())
+                                       .time(e.getTime())
+                                       .build())
+                       .next()
+                       .map(e -> 
+                               AppDetail.from(detail)
+                                           .lastEvent(e.getName())
+                                           .lastEventActor(e.getActor())
+                                           .build()
+                           )
+                       .switchIfEmpty(Mono.just(detail))
+                       .log();
+    }
 }

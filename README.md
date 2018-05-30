@@ -130,7 +130,7 @@ Please find attached application inventory detail and summary reports from api.r
 Sample `app-inventory-detail.csv`
 
 ```
-organization,space,application name,buildpack,stack,running instances,total instances,urls,last pushed,current state
+organization,space,application name,buildpack,stack,running instances,total instances,urls,last pushed,last event,last event actor,requested state
 Northwest,cphillipson,grivet-standalone,java,cflinuxfs2,0,1,grivet-standalone.cfapps.io,2017-06-28T13:50:18,stopped
 Northwest,cphillipson,cloud-native-spring,java,cflinuxfs2,0,1,cloud-native-spring-laboured-estragon.cfapps.io,2017-12-13T12:54:18,stopped
 Northwest,cphillipson,cloud-native-spring-ui,java,cflinuxfs2,0,1,cloud-native-spring-ui-riskiest-ghee.cfapps.io,2017-12-13T13:56:26,stopped
