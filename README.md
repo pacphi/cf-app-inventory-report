@@ -2,6 +2,12 @@
 
 This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Cloud Foundry Java Client](https://github.com/cloudfoundry/cf-java-client) and [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) libraries to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
 
+## Prerequisites
+
+* A [Pivotal Application Service](https://pivotal.io/platform/pivotal-application-service) account 
+* (Optional) Email account
+* (Optional) SMTP Host
+* (Optional) [SendGrid](https://sendgrid.com/pricing/) account 
 
 ## Clone
 
@@ -15,15 +21,31 @@ Edit the contents of the `application.yml` file located in `src/main/resources`.
 
 > You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and encrypting this configuration.
 
+### Minimum required keys
+
 At a minimum you should supply values for the following keys
 
-* `cf.apiHost` - a PCF foundation endpoint
-* `cf.username` - typically an Apps Manager administrator account
-* `cf.password`
+* `cf.apiHost` - a Pivotal Application Service API endpoint
+* `cf.username` - a Pivotal Application Service account username (typically an administrator account)
+* `cf.password` - a Pivotal Application Service account password
+* `notification.engine` - email provider, options are: `none`, `java-mail` or `sendgrid`
+
+> If you set the email provider to `none`, then no email will be delivered
+
+### for java-mail
+
 * `spring.mail.host` - an SMTP host
-* `spring.mail.username` - an email account
-* `spring.mail.password`
-* `spring.mail.recipients` - email accounts that will be sent an email with a CSV attachment
+* `spring.mail.username` - an email account username
+* `spring.mail.password` - an email account password
+* `mail.from` - originator email address 
+* `mail.recipients` - email addresses that will be sent an email with CSV attachments
+
+### for sendgrid
+
+* `spring.sendgrid.api-key` - an api key for your SendGrid account
+* `mail.from` - originator email address 
+* `mail.recipients` - email addresses that will be sent an email with CSV attachments
+
 
 ## How to Build
 
@@ -39,7 +61,8 @@ At a minimum you should supply values for the following keys
 
 ## How to deploy to Cloud Foundry
 
-Authenticate to a foundation using the API endpoint. E.g., to login to Pivotal Web Services (PWS).
+Authenticate to a foundation using the API endpoint. 
+> E.g., login to [Pivotal Web Services](https://run.pivotal.io)
 
 ```
 cf login -a https:// api.run.pivotal.io
@@ -120,7 +143,7 @@ PCF Application Inventory Report
 Sample 
 
 ```
-Please find attached application inventory detail and summary reports from api.run.pivotal.io generated 2018-05-17T12:25:25.169.
+Please find attached application inventory detail and summary reports from api.run.pivotal.io generated 2018-05-30T10:55:08.247.
 ```
 
 ### Attachments
@@ -138,6 +161,7 @@ zoo-labs,test,cphillipson-ruby-demo,ruby,cflinuxfs2,1,1,cphillipson-ruby-demo.cf
 zoo-labs,test,cook,java,cflinuxfs2,0,1,cook-impressive-bonobo.cfapps.io,2018-05-10T16:48:18,audit.app.stop,cphillipson@pivotal.io,stopped
 Northwest,nthomson,bookstore-connector,java,cflinuxfs2,1,1,bookstore-connector.cfapps.io,2018-04-09T16:40:23,,,started
 Northwest,nthomson,bookstore-service-broker,java,cflinuxfs2,1,1,bookstore-service-broker.cfapps.io,2018-04-09T12:49:41,,,started
+...
 ```
 
 #### Summary
@@ -145,28 +169,33 @@ Northwest,nthomson,bookstore-service-broker,java,cflinuxfs2,1,1,bookstore-servic
 Sample `app-inventory-summary.csv`
 
 ```
+organization,total
+Northwest,32
+zoo-labs,4
+
 buildpack,total
-java,13
-dotnet,6
+java,25
 unknown,5
 staticfile,2
+dotnet,2
+ruby,1
 nodejs,1
 
 last pushed,application total
-<= 1 day,0
-> 1 day <= 1 week,2
-> 1 week <= 1 month,8
-> 1 month <= 3 months,4
-> 3 months <= 6 months,5
+<= 1 day,2
+> 1 day <= 1 week,11
+> 1 week <= 1 month,6
+> 1 month <= 3 months,3
+> 3 months <= 6 months,6
 > 6 months <= 1 year,8
 > 1 year,0
 
 state,instance total
-started,18
-stopped,17
-all,35
+started,14
+stopped,30
+all,44
 
-Total applications: 27
+Total applications: 36
 ```
 
 ## Credits

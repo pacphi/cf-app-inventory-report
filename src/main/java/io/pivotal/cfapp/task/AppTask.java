@@ -58,7 +58,8 @@ public class AppTask implements ApplicationRunner {
                     new AppInfoRetrievedEvent(
                             this, 
                             r, 
-                            appDetailAggregator.countApplicationsByBuildpack()
+                            appDetailAggregator.countApplicationsByBuildpack(),
+                            appDetailAggregator.countApplicationsByOrganization()
                     )
                 )
             );

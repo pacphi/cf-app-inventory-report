@@ -8,11 +8,18 @@ import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.cloudfoundry.reactor.doppler.ReactorDopplerClient;
 import org.cloudfoundry.reactor.tokenprovider.PasswordGrantTokenProvider;
 import org.cloudfoundry.reactor.uaa.ReactorUaaClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import com.sendgrid.SendGrid;
+
+import io.pivotal.cfapp.mail.JavaMailNotifier;
+import io.pivotal.cfapp.mail.SendGridNotifier;
 
 @Configuration
 public class AppConfig {
@@ -73,5 +80,19 @@ public class AppConfig {
          
         eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
         return eventMulticaster;
+    }
+    
+    @Bean
+    @ConditionalOnProperty(prefix="notification", name="engine", havingValue="java-mail")
+    public JavaMailNotifier javaMailNotifier(
+            AppSettings appSettings, MailSettings mailSettings, JavaMailSender javaMailSender) {
+        return new JavaMailNotifier(appSettings, mailSettings, javaMailSender);
+    }
+    
+    @Bean
+    @ConditionalOnProperty(prefix="notification", name="engine", havingValue="sendgrid")
+    public SendGridNotifier sendGridNotifier(
+            AppSettings appSettings, MailSettings mailSettings, SendGrid sendGrid) {
+        return new SendGridNotifier(appSettings, mailSettings, sendGrid);
     }
 }

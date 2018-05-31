@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.BuildpackCount;
+import io.pivotal.cfapp.domain.OrganizationCount;
 
 @Component
 public class AppDetailAggregator {
@@ -38,6 +39,20 @@ public class AppDetailAggregator {
         );
         return reactiveMongoTemplate
                 .aggregate(agg, AppDetail.class, BuildpackCount.class)
+                    .toStream()
+                        .collect(Collectors.toList());
+    }
+    
+    public List<OrganizationCount> countApplicationsByOrganization() {
+        Aggregation agg = newAggregation(
+            project("organization"),
+            unwind("organization"),
+            group("organization").count().as("total"),
+            project("total").and("organization").previousOperation(),
+            sort(Sort.Direction.DESC, "total")
+        );
+        return reactiveMongoTemplate
+                .aggregate(agg, AppDetail.class, OrganizationCount.class)
                     .toStream()
                         .collect(Collectors.toList());
     }

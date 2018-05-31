@@ -1,4 +1,4 @@
-# Uncomment and (re)set the values for cf.apiHost, cf.username, and cf.password
+# (Re)set the values for cf.apiHost, cf.username, and cf.password
 # or set these as environment variables or command-line arguments. E.g.,
 #
 # as Environment variables
@@ -15,26 +15,39 @@
 #
 cf:
   apiHost: api.run.pivotal.io
-#  username: your_username
-#  password: your_password
+  username: replace_me
+  password: replace_me
 
 
 # Uncomment and (re)set the values for spring.mail.username, spring.mail.password
-# and spring.mail.recipients
+# mail.from, and mail.recipients
 # Configuration below is set up to work w/ a Gmail account
 # @see http://www.baeldung.com/spring-email
 spring:
   mail:
     host: smtp.gmail.com
     port: 587
-#    username: your_gmail_account
-#    password: your_gmail_password
+    username: replace_me
+    password: replace_me
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-#    recipients: 
-#      - recipient_account
-    subject: "PCF Application Inventory Report"
+  # SendGrid API key (alternative to username/password).
+  sendgrid:
+    api-key: replace_me
+
+mail:
+  from: replace_me
+  recipients: 
+#  - recipient_account
+  subject: "PCF Application Inventory Report"
+
+
+
+# Options are: none, java-mail or sendgrid    
+notification:
+  engine: none
+  

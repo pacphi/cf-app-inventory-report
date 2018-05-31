@@ -9,10 +9,10 @@ import lombok.Data;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix="spring.mail")
+@ConfigurationProperties(prefix="mail")
 public class MailSettings {
 
-    private String username;
+    private String from;
     private List<String> recipients;
     private String subject;
     

@@ -1,58 +1,33 @@
-package io.pivotal.cfapp.task;
+package io.pivotal.cfapp.mail;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import javax.activation.DataSource;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.mail.util.ByteArrayDataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.config.AppSettings;
 import io.pivotal.cfapp.config.MailSettings;
 import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.AppMetrics;
 import io.pivotal.cfapp.domain.BuildpackCount;
+import io.pivotal.cfapp.domain.OrganizationCount;
+import io.pivotal.cfapp.task.AppInfoRetrievedEvent;
+import lombok.extern.slf4j.Slf4j;
 
-@Component
-public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
-
-    private Logger log = LoggerFactory.getLogger(AppNotifier.class);
+@Slf4j
+public abstract class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
     
-    private AppSettings appSettings;
-    private MailSettings mailSettings;
-    private JavaMailSender javaMailSender;
+    protected final AppSettings appSettings;
+    protected final MailSettings mailSettings;
     
-    @Autowired
-    public AppNotifier(
-            AppSettings appSettings, MailSettings mailSettings, 
-            JavaMailSender javaMailSender) {
+    public AppNotifier(AppSettings appSettings, MailSettings mailSettings) {
         this.appSettings = appSettings;
         this.mailSettings = mailSettings;
-        this.javaMailSender = javaMailSender;
     }
 
-    protected void sendMail(String to, String subject, String body, String detailAttachment, String summaryAttachment) throws MessagingException, IOException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setFrom(mailSettings.getUsername());
-        helper.setSubject(subject);
-        helper.setTo(to);
-        helper.setText(body, true);
-        DataSource detail = new ByteArrayDataSource(detailAttachment, "text/csv");
-        DataSource summary = new ByteArrayDataSource(summaryAttachment, "text/csv");
-        helper.addAttachment("app-inventory-detail.csv", detail);
-        helper.addAttachment("app-inventory-summary.csv", summary);
-        javaMailSender.send(message);
-    }
+    protected abstract void sendMail(String to, String subject, String body, String detailAttachment, String summaryAttachment) throws MessagingException, IOException;
 
     @Override
     public void onApplicationEvent(AppInfoRetrievedEvent event) {
@@ -97,6 +72,15 @@ public class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
     private String applySummaryAttachment(AppInfoRetrievedEvent event) {
         AppMetrics metrics = new AppMetrics(event.getDetail());
         StringBuffer attachment = new StringBuffer();
+        
+        attachment.append("\n");
+        attachment.append(OrganizationCount.headers());
+        attachment.append("\n");
+        event.getOrganizationCounts().forEach(r -> {
+            attachment.append(r.toCsv());
+            attachment.append("\n");
+        });
+        
         attachment.append("\n");
         attachment.append(BuildpackCount.headers());
         attachment.append("\n");
