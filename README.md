@@ -1,13 +1,24 @@
-# Cloud Foundry Application Inventory Report
+# Pivotal Application Service Inventory Report
 
-This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Cloud Foundry Java Client](https://github.com/cloudfoundry/cf-java-client) and [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) libraries to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
+This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) libraries to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
 
 ## Prerequisites
 
-* A [Pivotal Application Service](https://pivotal.io/platform/pivotal-application-service) account 
-* (Optional) Email account
-* (Optional) SMTP Host
-* (Optional) [SendGrid](https://sendgrid.com/pricing/) account 
+Required
+
+* [Pivotal Application Service](https://pivotal.io/platform/pivotal-application-service) account 
+
+Optional
+
+* Email account
+* SMTP Host
+* [SendGrid](https://sendgrid.com/pricing/) account 
+
+## Tools
+
+* [git](https://git-scm.com/downloads) 2.17.1 or better
+* [JDK](http://openjdk.java.net/install/) 8u162 or better
+* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.37.0 or better
 
 ## Clone
 
@@ -58,8 +69,9 @@ At a minimum you should supply values for the following keys
 ```
 ./gradlew bootRun
 ```
+> You'll need to manually stop to the application with `Ctrl+C`
 
-## How to deploy to Cloud Foundry
+## How to deploy to Pivotal Application Service
 
 Authenticate to a foundation using the API endpoint. 
 > E.g., login to [Pivotal Web Services](https://run.pivotal.io)
@@ -75,7 +87,7 @@ cf push get-app-details-task --no-route --health-check-type none -p ./build/libs
 ```
 
 
-## How to run as a task on Cloud Foundry
+## How to run as a task on Pivotal Application Service
 
 To run the task
 
@@ -90,7 +102,7 @@ cf logs get-app-details-task --recent
 ```
 
 
-## How to schedule the task on Cloud Foundry
+## How to schedule the task on Pivotal Application Service
 
 Let's employ the [job scheduler](https://docs.pivotal.io/pcf-scheduler/1-1/using.html).
 
@@ -106,7 +118,7 @@ Bind the service instance to the task
 cf bind-service get-app-details-task get-app-details-job
 ```
 
-You'll need the Pivotal Cloud Foundry [job scheduler plugin for the cf CLI](https://network.pivotal.io/products/p-scheduler-for-pcf). Once the cf CLI plugin is installed, you can create jobs.
+You'll need the Pivotal Application Service [job scheduler plugin for the cf CLI](https://network.pivotal.io/products/p-scheduler-for-pcf). Once the cf CLI plugin is installed, you can create jobs.
 
 ```
 cf create-job get-app-details-task get-app-details-scheduled-job ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
