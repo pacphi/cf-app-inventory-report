@@ -42,7 +42,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.DAYS.between(i.getLastPushed().toLocalDate(), NOW) <= 1
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.DAYS.between(i.getLastPushed().toLocalDate(), NOW) <= 1
                     )
                     .collect(Collectors.toList())
                     .size();
@@ -52,7 +53,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.WEEKS.between(i.getLastPushed().toLocalDate(), NOW) <= 1 &&
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.WEEKS.between(i.getLastPushed().toLocalDate(), NOW) <= 1 &&
                         ChronoUnit.DAYS.between(i.getLastPushed().toLocalDate(), NOW) > 1
                     )
                     .collect(Collectors.toList())
@@ -63,7 +65,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) <= 1 &&
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) <= 1 &&
                         ChronoUnit.WEEKS.between(i.getLastPushed().toLocalDate(), NOW) > 1
                     )
                     .collect(Collectors.toList())
@@ -74,7 +77,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) <= 3 &&
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) <= 3 &&
                         ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) > 1
                     )
                     .collect(Collectors.toList())
@@ -85,7 +89,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) <= 6 &&
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) <= 6 &&
                         ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) > 3
                     )
                     .collect(Collectors.toList())
@@ -96,7 +101,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.YEARS.between(i.getLastPushed().toLocalDate(), NOW) <= 1 &&
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.YEARS.between(i.getLastPushed().toLocalDate(), NOW) <= 1 &&
                         ChronoUnit.MONTHS.between(i.getLastPushed().toLocalDate(), NOW) > 6
                     )
                     .collect(Collectors.toList())
@@ -107,7 +113,8 @@ public class AppMetrics {
         return detail
                 .stream()
                     .filter(
-                        i -> ChronoUnit.YEARS.between(i.getLastPushed().toLocalDate(), NOW) > 1
+                        i -> i.getLastPushed() != null &&
+                        ChronoUnit.YEARS.between(i.getLastPushed().toLocalDate(), NOW) > 1
                     )
                     .collect(Collectors.toList())
                     .size();

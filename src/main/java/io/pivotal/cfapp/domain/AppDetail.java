@@ -2,6 +2,8 @@ package io.pivotal.cfapp.domain;
 
 import java.time.LocalDateTime;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -59,15 +61,15 @@ public class AppDetail {
     
     public String toCsv() {
         return String
-                .join(",", nonNullify(getOrganization()), nonNullify(getSpace()), 
-                        nonNullify(getAppName()), getBuildpack(), 
-                        nonNullify(getStack()), String.valueOf(getRunningInstances()), 
-                        String.valueOf(getTotalInstances()), nonNullify(getUrls()),
-                        getLastPushed().toString(), nonNullify(getLastEvent()), 
-                        nonNullify(getLastEventActor()), getRequestedState());
+                .join(",", wrap(getOrganization()), wrap(getSpace()), 
+                        wrap(getAppName()), wrap(getBuildpack()), 
+                        wrap(getStack()), wrap(String.valueOf(getRunningInstances())), 
+                        wrap(String.valueOf(getTotalInstances())), wrap(getUrls()),
+                        wrap(getLastPushed() != null ? getLastPushed().toString(): ""), wrap(getLastEvent()), 
+                        wrap(getLastEventActor()), wrap(getRequestedState()));
     }
     
-    private String nonNullify(String value) {
-        return value != null ? value : "";
+    private String wrap(String value) {
+        return value != null ? StringUtils.wrap(value, '"') : StringUtils.wrap("", '"');
     }
 }

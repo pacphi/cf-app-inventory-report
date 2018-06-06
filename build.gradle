@@ -25,7 +25,7 @@ repositories {
 
 
 dependencies {
-    compileOnly('org.projectlombok:lombok')
+    compileOnly('org.projectlombok:lombok:1.18.0')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')
     compile('org.apache.commons:commons-lang3:3.7')
     compile('org.springframework.boot:spring-boot-starter-webflux')
