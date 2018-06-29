@@ -1,6 +1,6 @@
 buildscript {
     ext { 
-        springBootVersion = '2.0.2.RELEASE' 
+        springBootVersion = '2.0.3.RELEASE' 
     }
     repositories { 
         mavenCentral() 
@@ -23,6 +23,10 @@ repositories {
     mavenCentral() 
 }
 
+bootRun {
+  // support passing -Dsystem.property=value to bootRun task
+  systemProperties = System.properties
+}
 
 dependencies {
     compileOnly('org.projectlombok:lombok:1.18.0')
@@ -33,7 +37,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('com.sendgrid:sendgrid-java:4.2.1')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
-    runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
+    compile('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
     compile('org.cloudfoundry:cloudfoundry-client-reactor:3.10.0.RELEASE')
     compile('org.cloudfoundry:cloudfoundry-operations:3.10.0.RELEASE')
     compile('io.projectreactor:reactor-core:3.1.7.RELEASE')

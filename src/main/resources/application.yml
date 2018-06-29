@@ -45,7 +45,11 @@ mail:
 #  - recipient_account
   subject: "PCF Application Inventory Report"
 
-
+logging:
+  level:
+    de.flapdoodle.embed.mongo: INFO
+    org.springframework.boot: INFO
+    com.sendgrid: DEBUG
 
 # Options are: none, java-mail or sendgrid    
 notification:

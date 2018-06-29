@@ -57,6 +57,27 @@ At a minimum you should supply values for the following keys
 * `mail.from` - originator email address 
 * `mail.recipients` - email addresses that will be sent an email with CSV attachments
 
+### to override the default download URL
+
+On application start-up, a versioned Mongo executable is downloaded from a default location (addressable from the public internet).  If you would like to download the executable from an alternate location and/or select an alternate version, add the following:
+
+* `spring.mongodb.embedded.verson` - version of the Mongo executable (e.g., `3.4.15`)
+* `spring.mongodb.embedded.download.path` - the path to the parent directory hosting OS-specific sub-directories and version(s) of Mongo executables (e.g., `https://fastdl.mongodb.org/`)
+* `spring.mongodb.embedded.download.alternate` - this is a boolean property and must be set to true to activate alternate download URL
+
+As an example, the following
+
+```
+spring:
+  mongodb:
+    embedded:
+      version: 3.4.15
+      download:
+        path: https://fastdl.mongodb.org/
+        alternate: true
+```
+
+would download the Mongo executable from `https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.4.15.tgz` when the app is running on a Mac OSX host.
 
 ## How to Build
 
