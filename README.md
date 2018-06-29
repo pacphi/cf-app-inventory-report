@@ -1,4 +1,4 @@
-# Pivotal Application Service Inventory Report
+# Pivotal Application Service > Application Inventory Report
 
 This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) libraries to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
 
@@ -23,7 +23,7 @@ Optional
 ## Clone
 
 ```
-git clone https://github.com/pacphi/cf-get-app-details.git
+git clone https://github.com/pacphi/cf-app-inventory-report.git
 ```
 
 ## How to configure
