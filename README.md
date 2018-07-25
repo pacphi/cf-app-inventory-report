@@ -106,7 +106,7 @@ cf login -a https:// api.run.pivotal.io
 Push the app disabling health check and routing.
 
 ```
-cf push get-app-details-task --no-route --health-check-type none -p ./build/libs/cf-get-app-details-0.0.1-SNAPSHOT.jar -m 1G
+cf push get-app-details-task --no-route --health-check-type none -p ./build/libs/cf-app-inventory-report-0.0.1-SNAPSHOT.jar -m 1G
 ```
 
 
