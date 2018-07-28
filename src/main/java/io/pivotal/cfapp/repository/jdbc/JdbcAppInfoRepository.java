@@ -36,7 +36,7 @@ public class JdbcAppInfoRepository {
 				entity.getRunningInstances(),
 				entity.getTotalInstances(),
 				entity.getUrls(),
-				Timestamp.valueOf(entity.getLastPushed()),
+				entity.getLastPushed() != null ? Timestamp.valueOf(entity.getLastPushed()): null,
 				entity.getLastEvent(),
 				entity.getLastEventActor(),
 				entity.getRequestedState()
@@ -60,7 +60,7 @@ public class JdbcAppInfoRepository {
 						.runningInstances(rs.getInt(7))
 						.totalInstances(rs.getInt(8))
 						.urls(rs.getString(9))
-						.lastPushed(rs.getTimestamp(10).toLocalDateTime())
+						.lastPushed(rs.getTimestamp(10) != null ? rs.getTimestamp(10).toLocalDateTime(): null)
 						.lastEvent(rs.getString(11))
 						.lastEventActor(rs.getString(12))
 						.requestedState(rs.getString(13))
@@ -83,7 +83,7 @@ public class JdbcAppInfoRepository {
 						.runningInstances(rs.getInt(7))
 						.totalInstances(rs.getInt(8))
 						.urls(rs.getString(9))
-						.lastPushed(rs.getTimestamp(10).toLocalDateTime())
+						.lastPushed(rs.getTimestamp(10) != null ? rs.getTimestamp(10).toLocalDateTime(): null)
 						.lastEvent(rs.getString(11))
 						.lastEventActor(rs.getString(12))
 						.requestedState(rs.getString(13))
