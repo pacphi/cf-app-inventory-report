@@ -33,7 +33,7 @@ public class MongoAppTask extends AppTask {
     }
 
     @Override
-    public void runTask() {
+    protected void runTask() {
         reactiveAppInfoRepository
             .deleteAll()
             .thenMany(getOrganizations())
