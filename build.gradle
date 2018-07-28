@@ -16,7 +16,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'io.pivotal'
-version = '0.0.1-SNAPSHOT'
+version = '0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories { 
@@ -37,6 +37,9 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('com.sendgrid:sendgrid-java:4.2.1')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    compile('com.github.davidmoten:rxjava2-jdbc:0.1-RC38')
+    compile('com.zaxxer:HikariCP:3.2.0')
+    compile('com.h2database:h2:1.4.197')
     compile('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
     compile('org.cloudfoundry:cloudfoundry-client-reactor:3.10.0.RELEASE')
     compile('org.cloudfoundry:cloudfoundry-operations:3.10.0.RELEASE')
