@@ -1,6 +1,6 @@
 # Pivotal Application Service > Application Inventory Report
 
-This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) libraries to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
+This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [H2](http://www.h2database.com/html/main.html) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
 
 ## Prerequisites
 
@@ -57,7 +57,17 @@ At a minimum you should supply values for the following keys
 * `mail.from` - originator email address 
 * `mail.recipients` - email addresses that will be sent an email with CSV attachments
 
-### to override the default download URL
+### to choose between backends
+
+Set `spring.profiles.active` to one of either `mongo` or `jdbc`.
+
+E.g., you could start the app with an H2 backend using
+
+```
+./gradlew bootRun -Dspring.profiles.active=jdbc
+```
+
+### to override the default download URL for Embedded Mongo
 
 On application start-up, a versioned Mongo executable is downloaded from a default location (addressable from the public internet).  If you would like to download the executable from an alternate location and/or select an alternate version, add the following:
 
@@ -90,8 +100,10 @@ would download the Mongo executable from `https://fastdl.mongodb.org/osx/mongodb
 ## How to Run
 
 ```
-./gradlew bootRun
+./gradlew bootRun -Dspring.profiles.active={backend_provider}
 ```
+where `{backend_provider}` is either `mongo` or `jdbc`
+
 > You'll need to manually stop to the application with `Ctrl+C`
 
 ## How to deploy to Pivotal Application Service
@@ -243,3 +255,5 @@ Tip of the hat to those who've gone before...
 * [Mohit Sinha](https://github.com/mohitsinha/spring-boot-webflux-reactive-mongo)
 * [Pas Apicella](http://theblasfrompas.blogspot.com/2017/03/run-spring-cloud-task-from-pivotal.html)
 * [Robert Watkins](https://gist.github.com/twasink/3073710)
+* [David Moten](https://github.com/davidmoten/rxjava2-jdbc)
+* [Robert B Roeser](https://medium.com/netifi/spring-webflux-and-rxjava2-jdbc-83a94e71ba04)

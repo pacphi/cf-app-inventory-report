@@ -3,13 +3,12 @@ package io.pivotal.cfapp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
@@ -34,8 +33,9 @@ import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
 import de.flapdoodle.embed.process.store.IArtifactStore;
 import io.pivotal.cfapp.config.AdditionalEmbeddedMongoProperties;
  
- 
-@SpringBootApplication(exclude = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
+
+@Profile("mongo")
+@Configuration
 @EnableReactiveMongoRepositories
 @AutoConfigureAfter(EmbeddedMongoAutoConfiguration.class)
 public class MongoConfig extends AbstractReactiveMongoConfiguration {
