@@ -115,12 +115,25 @@ Authenticate to a foundation using the API endpoint.
 cf login -a https:// api.run.pivotal.io
 ```
 
-Push the app disabling health check and routing.
+Push the app, but don't start it, also disable health check and routing.
 
 ```
-cf push get-app-details-task --no-route --health-check-type none -p ./build/libs/cf-app-inventory-report-0.0.1-SNAPSHOT.jar -m 1G
+cf push get-app-details-task --no-route --health-check-type none -p ./build/libs/cf-app-inventory-report-0.0.1-SNAPSHOT.jar -m 1G --no-start
 ```
 
+Set environment variable for backend
+
+> You have a choice of backends, either `jdbc` or `mongo`
+
+```
+cf set-env get-app-details-task SPRING_PROFILES_ACTIVE jdbc
+```
+
+Start the app
+
+```
+cf start get-app-details-task
+```
 
 ## How to run as a task on Pivotal Application Service
 
