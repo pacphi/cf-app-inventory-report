@@ -61,7 +61,7 @@ spring:
   
   autoconfigure:
     exclude:
-    - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurration
+    - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
     
   mongodb:
     embedded:
