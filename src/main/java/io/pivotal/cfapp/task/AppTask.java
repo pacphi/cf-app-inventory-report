@@ -1,5 +1,6 @@
 package io.pivotal.cfapp.task;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import org.cloudfoundry.operations.DefaultCloudFoundryOperations;
@@ -87,10 +88,10 @@ public abstract class AppTask implements ApplicationRunner {
                                     .runningInstances(a.getRunningInstances())
                                     .totalInstances(a.getInstances())
                                     .urls(String.join(",", a.getUrls()))
-                                    .lastPushed(a.getLastUploaded()
+                                    .lastPushed(a.getLastUploaded() != null ? a.getLastUploaded()
                                                 .toInstant()
                                                 .atZone(ZoneId.systemDefault())
-                                                .toLocalDateTime())
+                                                .toLocalDateTime(): LocalDateTime.of(1400, 1,1,12,0,0,0))
                                     .requestedState(a.getRequestedState().toLowerCase())
                                     .build())
                     .log();
