@@ -15,7 +15,7 @@ public class Buildpack {
             "hwc", "binary", "tomcat", "liberty", 
             "jboss", "apt", "nginx", "clojure", "haskell",
             "tomee", "jetty", "meteor", "erlang", "elixir",
-            "swift", "rust", "emberjs" };
+            "swift", "rust", "emberjs", "pyspark", "tc" };
     
     public static String is(String input) {
         if (StringUtils.isBlank(input)) {

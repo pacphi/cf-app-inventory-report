@@ -28,6 +28,7 @@ public class AppDetail {
     private String space;
     private String appName;
     private String buildpack;
+    private String image;
     private String stack;
     private Integer runningInstances;
     private Integer totalInstances;
@@ -39,7 +40,7 @@ public class AppDetail {
     
     public static String headers() {
         return String.join(",", "organization", "space", 
-                "application name", "buildpack", "stack", "running instances", "total instances", "urls", "last pushed", "last event", "last event actor", "requested state");
+                "application name", "buildpack", "image", "stack", "running instances", "total instances", "urls", "last pushed", "last event", "last event actor", "requested state");
     }
     
     public static AppDetailBuilder from(AppDetail detail) {
@@ -49,6 +50,7 @@ public class AppDetail {
                             .space(detail.getSpace())
                             .appName(detail.getAppName())
                             .buildpack(detail.getBuildpack())
+                            .image(detail.getImage())
                             .stack(detail.getStack())
                             .runningInstances(detail.getRunningInstances())
                             .totalInstances(detail.getTotalInstances())
@@ -62,7 +64,7 @@ public class AppDetail {
     public String toCsv() {
         return String
                 .join(",", wrap(getOrganization()), wrap(getSpace()), 
-                        wrap(getAppName()), wrap(getBuildpack()), 
+                        wrap(getAppName()), wrap(getBuildpack()), wrap(getImage()),
                         wrap(getStack()), wrap(String.valueOf(getRunningInstances())), 
                         wrap(String.valueOf(getTotalInstances())), wrap(getUrls()),
                         wrap(getLastPushed() != null ? getLastPushed().toString(): ""), wrap(getLastEvent()), 

@@ -1,6 +1,7 @@
 package io.pivotal.cfapp.task.mongo;
 
 import org.cloudfoundry.operations.DefaultCloudFoundryOperations;
+import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
@@ -22,11 +23,12 @@ public class MongoAppTask extends AppTask {
     @Autowired
     public MongoAppTask(
             DefaultCloudFoundryOperations opsClient,
+            ReactorCloudFoundryClient cloudFoundryClient,
             ApplicationEventPublisher applicationEventPublisher,
             MongoAppInfoRepository reactiveAppInfoRepository,
             AppDetailAggregator appDetailAggregator
             ) {
-        super(opsClient);
+        super(opsClient, cloudFoundryClient);
         this.applicationEventPublisher = applicationEventPublisher;
         this.reactiveAppInfoRepository = reactiveAppInfoRepository;
         this.appDetailAggregator = appDetailAggregator;
@@ -39,10 +41,10 @@ public class MongoAppTask extends AppTask {
             .thenMany(getOrganizations())
             .flatMap(spaceRequest -> getSpaces(spaceRequest))
             .flatMap(appSummaryRequest -> getApplicationSummary(appSummaryRequest))
+            .flatMap(appManifestRequest -> getDockerImage(appManifestRequest))
             .flatMap(appDetailRequest -> getApplicationDetail(appDetailRequest))
             .flatMap(withLastEventRequest -> enrichWithAppEvent(withLastEventRequest))
             .flatMap(reactiveAppInfoRepository::save)
-            .thenMany(reactiveAppInfoRepository.findAll())
             .collectList()
             .subscribe(r -> 
                 applicationEventPublisher.publishEvent(

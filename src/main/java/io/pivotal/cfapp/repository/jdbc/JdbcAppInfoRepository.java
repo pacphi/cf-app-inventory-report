@@ -24,7 +24,7 @@ public class JdbcAppInfoRepository {
 	}
 	
 	public Mono<AppDetail> save(AppDetail entity) {
-		String createOne = "insert into app_detail (organization, space, app_name, buildpack, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String createOne = "insert into app_detail (organization, space, app_name, buildpack, image, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		Flowable<Integer> insert = database
 			.update(createOne)
 			.parameters(
@@ -32,6 +32,7 @@ public class JdbcAppInfoRepository {
 				entity.getSpace(),
 				entity.getAppName(),
 				entity.getBuildpack(),
+				entity.getImage(),
 				entity.getStack(),
 				entity.getRunningInstances(),
 				entity.getTotalInstances(),
@@ -44,10 +45,9 @@ public class JdbcAppInfoRepository {
 			.returnGeneratedKeys()
 			.getAs(Integer.class);
 		
-		String selectOne = "select id, organization, space, app_name, buildpack, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail where id = ?";
+		String selectOne = "select id, organization, space, app_name, buildpack, image, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail where id = ?";
 		Flowable<AppDetail> result = database
 			.select(selectOne)
-			.dependsOn(insert)
 			.parameterStream(insert)
 			.get(rs -> AppDetail
 						.builder()
@@ -56,20 +56,21 @@ public class JdbcAppInfoRepository {
 						.space(rs.getString(3))
 						.appName(rs.getString(4))
 						.buildpack(rs.getString(5))
-						.stack(rs.getString(6))
-						.runningInstances(rs.getInt(7))
-						.totalInstances(rs.getInt(8))
-						.urls(rs.getString(9))
-						.lastPushed(rs.getTimestamp(10) != null ? rs.getTimestamp(10).toLocalDateTime(): null)
-						.lastEvent(rs.getString(11))
-						.lastEventActor(rs.getString(12))
-						.requestedState(rs.getString(13))
+						.image(rs.getString(6))
+						.stack(rs.getString(7))
+						.runningInstances(rs.getInt(8))
+						.totalInstances(rs.getInt(9))
+						.urls(rs.getString(10))
+						.lastPushed(rs.getTimestamp(11) != null ? rs.getTimestamp(11).toLocalDateTime(): null)
+						.lastEvent(rs.getString(12))
+						.lastEventActor(rs.getString(13))
+						.requestedState(rs.getString(14))
 						.build());
 		return Mono.from(result);
 	}
 
 	public Flux<AppDetail> findAll() {
-		String selectAll = "select id, organization, space, app_name, buildpack, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail";
+		String selectAll = "select id, organization, space, app_name, buildpack, image stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail";
 		Flowable<AppDetail> result = database
 			.select(selectAll)
 			.get(rs -> AppDetail
@@ -79,14 +80,15 @@ public class JdbcAppInfoRepository {
 						.space(rs.getString(3))
 						.appName(rs.getString(4))
 						.buildpack(rs.getString(5))
-						.stack(rs.getString(6))
-						.runningInstances(rs.getInt(7))
-						.totalInstances(rs.getInt(8))
-						.urls(rs.getString(9))
-						.lastPushed(rs.getTimestamp(10) != null ? rs.getTimestamp(10).toLocalDateTime(): null)
-						.lastEvent(rs.getString(11))
-						.lastEventActor(rs.getString(12))
-						.requestedState(rs.getString(13))
+						.image(rs.getString(6))
+						.stack(rs.getString(7))
+						.runningInstances(rs.getInt(8))
+						.totalInstances(rs.getInt(9))
+						.urls(rs.getString(10))
+						.lastPushed(rs.getTimestamp(11) != null ? rs.getTimestamp(11).toLocalDateTime(): null)
+						.lastEvent(rs.getString(12))
+						.lastEventActor(rs.getString(13))
+						.requestedState(rs.getString(14))
 						.build());
 		return Flux.from(result);
 	}

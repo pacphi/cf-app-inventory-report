@@ -28,7 +28,7 @@ public class DatabaseCreator implements ApplicationRunner {
 		try {
 			Connection c = database.connection().blockingGet();
             c.setAutoCommit(true);
-            c.prepareStatement("create table app_detail ( id int auto_increment primary key, organization varchar(100), space varchar(100), app_name varchar(100), buildpack varchar(50), stack varchar(25), running_instances int, total_instances int, urls varchar(250), last_pushed timestamp, last_event varchar(50), last_event_actor varchar(100), requested_state varchar(25) )")
+            c.prepareStatement("create table app_detail ( id int auto_increment primary key, organization varchar(100), space varchar(100), app_name varchar(100), buildpack varchar(50), image varchar(250), stack varchar(25), running_instances int, total_instances int, urls varchar(1000), last_pushed timestamp, last_event varchar(50), last_event_actor varchar(100), requested_state varchar(25) )")
             	.execute();
         } catch (SQLException e) {
             throw new SQLRuntimeException(e);

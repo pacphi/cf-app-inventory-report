@@ -2,10 +2,12 @@ package io.pivotal.cfapp.task;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import org.cloudfoundry.operations.DefaultCloudFoundryOperations;
 import org.cloudfoundry.operations.applications.GetApplicationEventsRequest;
 import org.cloudfoundry.operations.applications.GetApplicationRequest;
+import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -20,10 +22,14 @@ import reactor.core.publisher.Mono;
 public abstract class AppTask implements ApplicationRunner {
     
     private DefaultCloudFoundryOperations opsClient;
+    private ReactorCloudFoundryClient cloudFoundryClient;
     
     @Autowired
-    public AppTask(DefaultCloudFoundryOperations opsClient) {
+    public AppTask(
+    		DefaultCloudFoundryOperations opsClient,
+    		ReactorCloudFoundryClient cloudFoundryClient) {
         this.opsClient = opsClient;
+        this.cloudFoundryClient = cloudFoundryClient;
     }
 
     @Override
@@ -54,6 +60,7 @@ public abstract class AppTask implements ApplicationRunner {
                     .log();
     }
     
+    
     protected Flux<AppRequest> getApplicationSummary(AppRequest request) {
         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -62,8 +69,17 @@ public abstract class AppTask implements ApplicationRunner {
             .build()
                 .applications()
                     .list()
-                    .map(as -> AppRequest.from(request).appName(as.getName()).build())
+                    .map(as -> AppRequest.from(request).id(as.getId()).appName(as.getName()).build())
                     .log();
+    }
+    
+    protected Mono<AppRequest> getDockerImage(AppRequest request) {
+    	return cloudFoundryClient
+				.applicationsV2()
+					.get(org.cloudfoundry.client.v2.applications.GetApplicationRequest.builder().applicationId(request.getId()).build())
+	    			.onErrorResume(e -> Mono.empty())
+	    			.map(gar -> AppRequest.from(request).image(gar.getEntity().getDockerImage()).build())
+	    			.log();
     }
     
     // Added onErrorResume as per https://stackoverflow.com/questions/48243630/is-there-a-way-in-reactor-to-ignore-error-signals
@@ -84,10 +100,11 @@ public abstract class AppTask implements ApplicationRunner {
                                     .space(request.getSpace())
                                     .appName(request.getAppName())
                                     .buildpack(Buildpack.is(a.getBuildpack()))
+                                    .image(request.getImage())
                                     .stack(a.getStack())
                                     .runningInstances(a.getRunningInstances())
                                     .totalInstances(a.getInstances())
-                                    .urls(String.join(",", a.getUrls()))
+                                    .urls(toTruncatedString(a.getUrls()))
                                     .lastPushed(a.getLastUploaded() != null ? a.getLastUploaded()
                                                 .toInstant()
                                                 .atZone(ZoneId.systemDefault())
@@ -95,6 +112,11 @@ public abstract class AppTask implements ApplicationRunner {
                                     .requestedState(a.getRequestedState().toLowerCase())
                                     .build())
                     .log();
+    }
+    
+    private String toTruncatedString(List<String> urls) {
+    	String rawData = String.join(",", urls);
+    	return rawData.length() <= 1000 ? rawData : rawData.substring(0, 1000);  
     }
 
     protected Mono<AppDetail> enrichWithAppEvent(AppDetail detail) {
