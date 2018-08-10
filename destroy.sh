@@ -2,6 +2,5 @@
 
 set -e
 
-cf delete-job get-app-inventory-scheduled-job
-cf delete-service scheduler-for-pcf
+cf stop get-app-inventory-task
 cf delete get-app-inventory-task
