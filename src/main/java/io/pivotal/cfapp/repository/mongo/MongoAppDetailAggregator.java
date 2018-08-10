@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.BuildpackCount;
+import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
 
@@ -59,5 +60,20 @@ public class MongoAppDetailAggregator implements AppDetailAggregator {
                     .toStream()
                         .collect(Collectors.toList());
     }
+
+	@Override
+	public List<DockerImageCount> countApplicationsByDockerImage() {
+		Aggregation agg = newAggregation(
+	            project("image"),
+	            unwind("image"),
+	            group("image").count().as("total"),
+	            project("total").and("image").previousOperation(),
+	            sort(Sort.Direction.DESC, "total")
+	        );
+	        return reactiveMongoTemplate
+	                .aggregate(agg, AppDetail.class, DockerImageCount.class)
+	                    .toStream()
+	                        .collect(Collectors.toList());
+	}
     
 }

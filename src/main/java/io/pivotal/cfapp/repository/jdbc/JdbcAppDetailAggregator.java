@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.domain.BuildpackCount;
+import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
 
@@ -36,6 +37,15 @@ public class JdbcAppDetailAggregator implements AppDetailAggregator {
 		return database
 				.select("SELECT organization, COUNT(id) AS total FROM app_detail GROUP BY organization")
 				.get(rs -> new OrganizationCount(rs.getString(1), rs.getInt(2)))
+				.toList()
+				.blockingGet();
+	}
+
+	@Override
+	public List<DockerImageCount> countApplicationsByDockerImage() {
+		return database
+				.select("SELECT image, COUNT(id) AS total FROM app_detail GROUP BY image")
+				.get(rs -> new DockerImageCount(rs.getString(1), rs.getInt(2)))
 				.toList()
 				.blockingGet();
 	}

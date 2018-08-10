@@ -52,7 +52,8 @@ public class JdbcAppTask extends AppTask {
                             this, 
                             r, 
                             appDetailAggregator.countApplicationsByBuildpack(),
-                            appDetailAggregator.countApplicationsByOrganization()
+                            appDetailAggregator.countApplicationsByOrganization(),
+                            appDetailAggregator.countApplicationsByDockerImage()
                     )
                 )
             );

@@ -12,6 +12,7 @@ import io.pivotal.cfapp.config.MailSettings;
 import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.AppMetrics;
 import io.pivotal.cfapp.domain.BuildpackCount;
+import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
 import io.pivotal.cfapp.task.AppInfoRetrievedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +88,14 @@ public abstract class AppNotifier implements ApplicationListener<AppInfoRetrieve
         event.getBuildpackCounts().forEach(r -> {
             attachment.append(r.toCsv());
             attachment.append("\n");
+        });
+        
+        attachment.append("\n");
+        attachment.append(DockerImageCount.headers());
+        attachment.append("\n");
+        event.getDockerImages().forEach(r -> {
+        	attachment.append(r.toCsv());
+        	attachment.append("\n");
         });
     
         attachment.append("\n");

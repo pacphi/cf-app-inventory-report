@@ -52,7 +52,8 @@ public class MongoAppTask extends AppTask {
                             this, 
                             r, 
                             appDetailAggregator.countApplicationsByBuildpack(),
-                            appDetailAggregator.countApplicationsByOrganization()
+                            appDetailAggregator.countApplicationsByOrganization(),
+                            appDetailAggregator.countApplicationsByDockerImage()
                     )
                 )
             );
