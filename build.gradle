@@ -38,6 +38,7 @@ dependencies {
     compile('com.sendgrid:sendgrid-java:4.2.1')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('com.github.davidmoten:rxjava2-jdbc:0.1-RC38')
+    compile('org.springframework:spring-jdbc')
     compile('com.zaxxer:HikariCP:3.2.0')
     compile('com.h2database:h2:1.4.197')
     compile('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
