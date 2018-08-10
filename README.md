@@ -108,6 +108,8 @@ where `{backend_provider}` is either `mongo` or `jdbc`
 
 ## How to deploy to Pivotal Application Service
 
+You may choose to follow the step-by-step instructions below or execute a couple of shell scripts to [deploy](deploy.sh) and/or [shutdown/destroy](destroy.sh) the application.
+
 Authenticate to a foundation using the API endpoint. 
 > E.g., login to [Pivotal Web Services](https://run.pivotal.io)
 
@@ -118,7 +120,7 @@ cf login -a https:// api.run.pivotal.io
 Push the app, but don't start it, also disable health check and routing.
 
 ```
-cf push get-app-details-task --no-route --health-check-type none -p ./build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar -m 1G --no-start
+cf push get-app-inventory-task --no-route --health-check-type none -p ./build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar -m 1G --no-start
 ```
 
 Set environment variable for backend
@@ -126,13 +128,13 @@ Set environment variable for backend
 > You have a choice of backends, either `jdbc` or `mongo`
 
 ```
-cf set-env get-app-details-task SPRING_PROFILES_ACTIVE jdbc
+cf set-env get-app-inventory-task SPRING_PROFILES_ACTIVE jdbc
 ```
 
 Start the app
 
 ```
-cf start get-app-details-task
+cf start get-app-inventory-task
 ```
 
 ## How to run as a task on Pivotal Application Service
@@ -140,51 +142,53 @@ cf start get-app-details-task
 To run the task
 
 ```
-cf run-task get-app-details-task ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
+cf run-task get-app-inventory-task ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
 ```
 
 To validate that the task ran successfully
 
 ```
-cf logs get-app-details-task --recent
+cf logs get-app-inventory-task --recent
 ```
 
 
 ## How to schedule the task on Pivotal Application Service
 
-Let's employ the [job scheduler](https://docs.pivotal.io/pcf-scheduler/1-1/using.html).
+Let's employ the [job scheduler](https://docs.pivotal.io/pcf-scheduler/1-2/using.html).
 
 Create the service instance
 
 ```
-cf create-service scheduler-for-pcf standard get-app-details-job
+cf create-service scheduler-for-pcf standard get-app-inventory-job
 ```
 
 Bind the service instance to the task
 
 ```
-cf bind-service get-app-details-task get-app-details-job
+cf bind-service get-app-inventory-task get-app-inventory-job
 ```
 
 You'll need the Pivotal Application Service [job scheduler plugin for the cf CLI](https://network.pivotal.io/products/p-scheduler-for-pcf). Once the cf CLI plugin is installed, you can create jobs.
 
 ```
-cf create-job get-app-details-task get-app-details-scheduled-job ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
+cf create-job get-app-inventory-task get-app-inventory-scheduled-job ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
 ```
 
 To execute the job
 
 ```
-cf run-job get-app-details-scheduled-job
+cf run-job get-app-inventory-scheduled-job
 ```
 
 To adjust the schedule for the job using a CRON-like expression (`MIN` `HOUR` `DAY-OF-MONTH` `MONTH` `DAY-OF-WEEK`)
 
 ```
-cf schedule-job get-app-details-scheduled-job "0 8 ? * * "
+cf schedule-job get-app-inventory-scheduled-job "0 8 ? * * "
 ```
 
-Consult the [User Guide](https://docs.pivotal.io/pcf-scheduler/1-1/using-jobs.html) for other commands.
+> Above example configures task to run daily at 8:00am
+
+Consult the [User Guide](https://docs.pivotal.io/pcf-scheduler/1-2/using-jobs.html) for other commands.
 
 ## What does the task do?
 
