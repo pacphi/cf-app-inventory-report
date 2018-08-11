@@ -30,7 +30,7 @@ bootRun {
 
 dependencyManagement {
      dependencies {
-          dependency compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+          dependency('ch.qos.logback:logback-core:1.2.3')
      }
 }
 
