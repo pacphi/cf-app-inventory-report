@@ -28,6 +28,12 @@ bootRun {
   systemProperties = System.properties
 }
 
+dependencyManagement {
+     dependencies {
+          dependency compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+     }
+}
+
 dependencies {
     compileOnly('org.projectlombok:lombok:1.18.2')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')
