@@ -35,7 +35,7 @@ public class JdbcAppDetailAggregator implements AppDetailAggregator {
 	@Override
 	public List<OrganizationCount> countApplicationsByOrganization() {
 		return database
-				.select("SELECT organization, COUNT(id) AS total FROM app_detail GROUP BY organization")
+				.select("SELECT organization, COUNT(id) AS total FROM app_detail WHERE organization IS NOT NULL GROUP BY organization")
 				.get(rs -> new OrganizationCount(rs.getString(1), rs.getInt(2)))
 				.toList()
 				.blockingGet();
@@ -44,7 +44,7 @@ public class JdbcAppDetailAggregator implements AppDetailAggregator {
 	@Override
 	public List<DockerImageCount> countApplicationsByDockerImage() {
 		return database
-				.select("SELECT image, COUNT(id) AS total FROM app_detail GROUP BY image")
+				.select("SELECT image, COUNT(id) AS total FROM app_detail WHERE image IS NOT NULL GROUP BY image")
 				.get(rs -> new DockerImageCount(rs.getString(1), rs.getInt(2)))
 				.toList()
 				.blockingGet();
