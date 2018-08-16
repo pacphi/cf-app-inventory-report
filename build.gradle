@@ -29,9 +29,12 @@ bootRun {
 }
 
 dependencyManagement {
-     dependencies {
-          dependency('ch.qos.logback:logback-core:1.2.3')
-     }
+	imports {
+		mavenBom 'org.springframework.cloud:spring-cloud-vault-dependencies:2.0.2.BUILD-SNAPSHOT'
+	}
+	dependencies {
+		dependency('ch.qos.logback:logback-core:1.2.3')
+	}
 }
 
 dependencies {
@@ -41,6 +44,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-mail')
+    compile('org.springframework.cloud:spring-cloud-vault-starter-config')
     compile('com.sendgrid:sendgrid-java:4.2.1')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('com.github.davidmoten:rxjava2-jdbc:0.1-RC38')
@@ -54,4 +58,10 @@ dependencies {
     compile('io.projectreactor.ipc:reactor-netty:0.7.8.RELEASE')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
+}
+
+repositories {
+    maven {
+        url 'https://repo.spring.io/libs-snapshot'
+    }
 }

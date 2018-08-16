@@ -15,8 +15,8 @@
 #
 cf:
   apiHost: api.run.pivotal.io
-  username: replace_me
-  password: replace_me
+  username: ${CF_ADMINRO_USERNAME}
+  password: ${CF_ADMINRO_PASSWORD}
 
 
 # Uncomment and (re)set the values for spring.mail.username, spring.mail.password
@@ -25,14 +25,14 @@ cf:
 # @see http://www.baeldung.com/spring-email
 spring:
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: replace_me
-    password: replace_me
+    host: 
+    port: 25
+    username: 
+    password: 
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
             enable: true
   # SendGrid API key (alternative to username/password).
@@ -40,9 +40,9 @@ spring:
     api-key: replace_me
 
 mail:
-  from: replace_me
+  from: 
   recipients: 
-#  - recipient_account
+  - recipient_account
   subject: "PCF Application Inventory Report"
 
 logging:

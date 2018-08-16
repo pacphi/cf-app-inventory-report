@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: cf-app-inventory-report
+  cloud:
+    vault:
+      authentication: APPROLE
+      app-role:
+        role-id: 
+        secret-id: 
+        role: 
+        app-role-path: 
