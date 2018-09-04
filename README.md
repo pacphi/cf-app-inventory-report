@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pacphi/cf-app-inventory-report.svg?branch=app-deploy)](https://travis-ci.org/pacphi/cf-app-inventory-report) [![Known Vulnerabilities](https://snyk.io/test/github/pacphi/cf-app-inventory-report/badge.svg)](https://snyk.io/test/github/pacphi/cf-app-inventory-report)
 
-This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [H2](http://www.h2database.com/html/main.html) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis. 
+This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [HSQL](http://hsqldb.org) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis. 
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ git clone https://github.com/pacphi/cf-app-inventory-report.git
 
 Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications. 
 
-> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and encrypting this configuration.
+> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
 
 ### Minimum required keys
 
@@ -63,7 +63,7 @@ At a minimum you should supply values for the following keys
 
 Set `spring.profiles.active` to one of either `mongo` or `jdbc`.
 
-E.g., you could start the app with an H2 backend using
+E.g., you could start the app with an HSQL backend using
 
 ```
 ./gradlew bootRun -Dspring.profiles.active=jdbc
