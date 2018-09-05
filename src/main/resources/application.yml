@@ -55,6 +55,16 @@ logging:
 notification:
   engine: none
 
+# Set schedule for this task to adhere to
+# @see https://crontab.guru for help, first parameter is seconds
+cron: "0 0 8 * * 1"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,scheduledtasks,loggers
+
 ---
 spring:
   profiles: mongo
@@ -82,12 +92,8 @@ spring:
     - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
     - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
     
-  datasource:
-    url: jdbc:h2:mem:cf-application-inventory
+  datasource: 
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:mem:cf-application-inventory
     username: sa
-    password:
-    driver-class-name: org.h2.Driver
-    
-  h2:
-    console:
-      enabled: true
+    password: 

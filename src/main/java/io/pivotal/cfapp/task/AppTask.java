@@ -45,8 +45,7 @@ public abstract class AppTask implements ApplicationRunner {
             .build()
                 .organizations()
                     .list()
-                    .map(os -> AppRequest.builder().organization(os.getName()).build())
-                    .log();
+                    .map(os -> AppRequest.builder().organization(os.getName()).build());
     }
     
     protected Flux<AppRequest> getSpaces(AppRequest request) {
@@ -56,8 +55,7 @@ public abstract class AppTask implements ApplicationRunner {
             .build()
                 .spaces()
                     .list()
-                    .map(ss -> AppRequest.from(request).space(ss.getName()).build())
-                    .log();
+                    .map(ss -> AppRequest.from(request).space(ss.getName()).build());
     }
     
     
@@ -69,8 +67,7 @@ public abstract class AppTask implements ApplicationRunner {
             .build()
                 .applications()
                     .list()
-                    .map(as -> AppRequest.from(request).id(as.getId()).appName(as.getName()).build())
-                    .log();
+                    .map(as -> AppRequest.from(request).id(as.getId()).appName(as.getName()).build());
     }
     
     protected Mono<AppRequest> getDockerImage(AppRequest request) {
@@ -78,8 +75,7 @@ public abstract class AppTask implements ApplicationRunner {
 				.applicationsV2()
 					.get(org.cloudfoundry.client.v2.applications.GetApplicationRequest.builder().applicationId(request.getId()).build())
 	    			.onErrorResume(e -> Mono.empty())
-	    			.map(gar -> AppRequest.from(request).image(gar.getEntity().getDockerImage()).build())
-	    			.log();
+	    			.map(gar -> AppRequest.from(request).image(gar.getEntity().getDockerImage()).build());
     }
     
     // Added onErrorResume as per https://stackoverflow.com/questions/48243630/is-there-a-way-in-reactor-to-ignore-error-signals
@@ -110,8 +106,7 @@ public abstract class AppTask implements ApplicationRunner {
                                                 .atZone(ZoneId.systemDefault())
                                                 .toLocalDateTime(): LocalDateTime.of(1400, 1,1,12,0,0,0))
                                     .requestedState(a.getRequestedState().toLowerCase())
-                                    .build())
-                    .log();
+                                    .build());
     }
     
     private String toTruncatedString(List<String> urls) {
@@ -140,7 +135,6 @@ public abstract class AppTask implements ApplicationRunner {
                                            .lastEventActor(e.getActor())
                                            .build()
                            )
-                       .switchIfEmpty(Mono.just(detail))
-                       .log();
+                       .switchIfEmpty(Mono.just(detail));
     }
 }

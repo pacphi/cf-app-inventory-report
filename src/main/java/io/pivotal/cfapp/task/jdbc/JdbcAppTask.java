@@ -5,6 +5,7 @@ import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.repository.AppDetailAggregator;
@@ -35,6 +36,7 @@ public class JdbcAppTask extends AppTask {
     }
 
     @Override
+    @Scheduled(cron = "${cron}")
     protected void runTask() {
         reactiveAppInfoRepository
             .deleteAll()

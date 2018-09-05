@@ -1,8 +1,8 @@
 # Pivotal Application Service > Application Inventory Report
 
-[![Build Status](https://travis-ci.org/pacphi/cf-app-inventory-report.svg?branch=master)](https://travis-ci.org/pacphi/cf-app-inventory-report) [![Known Vulnerabilities](https://snyk.io/test/github/pacphi/cf-app-inventory-report/badge.svg)](https://snyk.io/test/github/pacphi/cf-app-inventory-report)
+[![Build Status](https://travis-ci.org/pacphi/cf-app-inventory-report.svg?branch=app-deploy)](https://travis-ci.org/pacphi/cf-app-inventory-report) [![Known Vulnerabilities](https://snyk.io/test/github/pacphi/cf-app-inventory-report/badge.svg)](https://snyk.io/test/github/pacphi/cf-app-inventory-report)
 
-This is a [Spring Cloud Task](http://cloud.spring.io/spring-cloud-task/) that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [H2](http://www.h2database.com/html/main.html) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached. 
+This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [HSQL](http://hsqldb.org) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis. 
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ git clone https://github.com/pacphi/cf-app-inventory-report.git
 
 Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications. 
 
-> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and encrypting this configuration.
+> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
 
 ### Minimum required keys
 
@@ -63,7 +63,7 @@ At a minimum you should supply values for the following keys
 
 Set `spring.profiles.active` to one of either `mongo` or `jdbc`.
 
-E.g., you could start the app with an H2 backend using
+E.g., you could start the app with an HSQL backend using
 
 ```
 ./gradlew bootRun -Dspring.profiles.active=jdbc
@@ -92,6 +92,10 @@ spring:
 would download the Mongo executable from `https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.4.15.tgz` when the app is running on a Mac OSX host.
 
 > OS-specific sub-directory choices are: `linux`, `win32`, and `osx`. See [https://www.mongodb.com/download-center#community](https://www.mongodb.com/download-center#community) for more details.
+
+### to set the delivery Schedule
+
+Update the value of the `cron` property in `application.yml`.  Consult this [article](https://www.baeldung.com/spring-scheduled-tasks) and the [Javadoc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html#cron--) to understand how to tune it for your purposes.
 
 ## How to Build
 
@@ -122,7 +126,7 @@ cf login -a https:// api.run.pivotal.io
 Push the app, but don't start it, also disable health check and routing.
 
 ```
-cf push get-app-inventory-task --no-route --health-check-type none -p ./build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar -m 1G --no-start
+cf push get-app-inventory-task -p ./build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar -m 1G --no-start
 ```
 
 Set environment variable for backend
@@ -138,59 +142,6 @@ Start the app
 ```
 cf start get-app-inventory-task
 ```
-
-## How to run as a task on Pivotal Application Service
-
-To run the task
-
-```
-cf run-task get-app-inventory-task ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
-```
-
-To validate that the task ran successfully
-
-```
-cf logs get-app-inventory-task --recent
-```
-
-
-## How to schedule the task on Pivotal Application Service
-
-Let's employ the [job scheduler](https://docs.pivotal.io/pcf-scheduler/1-2/using.html).
-
-Create the service instance
-
-```
-cf create-service scheduler-for-pcf standard get-app-inventory-job
-```
-
-Bind the service instance to the task
-
-```
-cf bind-service get-app-inventory-task get-app-inventory-job
-```
-
-You'll need the Pivotal Application Service [job scheduler plugin for the cf CLI](https://network.pivotal.io/products/p-scheduler-for-pcf). Once the cf CLI plugin is installed, you can create jobs.
-
-```
-cf create-job get-app-inventory-task get-app-inventory-scheduled-job ".java-buildpack/open_jdk_jre/bin/java org.springframework.boot.loader.JarLauncher"
-```
-
-To execute the job
-
-```
-cf run-job get-app-inventory-scheduled-job
-```
-
-To adjust the schedule for the job using a CRON-like expression (`MIN` `HOUR` `DAY-OF-MONTH` `MONTH` `DAY-OF-WEEK`)
-
-```
-cf schedule-job get-app-inventory-scheduled-job "0 8 ? * * "
-```
-
-> Above example configures task to run daily at 8:00am
-
-Consult the [User Guide](https://docs.pivotal.io/pcf-scheduler/1-2/using-jobs.html) for other commands.
 
 ## What does the task do?
 
