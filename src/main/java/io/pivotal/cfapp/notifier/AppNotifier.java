@@ -1,53 +1,26 @@
-package io.pivotal.cfapp.mail;
+package io.pivotal.cfapp.notifier;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-
-import javax.mail.MessagingException;
 
 import org.springframework.context.ApplicationListener;
 
 import io.pivotal.cfapp.config.AppSettings;
-import io.pivotal.cfapp.config.MailSettings;
 import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.AppMetrics;
 import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
 import io.pivotal.cfapp.task.AppInfoRetrievedEvent;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public abstract class AppNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
     
-    protected final AppSettings appSettings;
-    protected final MailSettings mailSettings;
-    
-    public AppNotifier(AppSettings appSettings, MailSettings mailSettings) {
-        this.appSettings = appSettings;
-        this.mailSettings = mailSettings;
-    }
+	private AppSettings appSettings;
+	
+	public AppNotifier(AppSettings appSettings) {
+		this.appSettings = appSettings;
+	}
 
-    protected abstract void sendMail(String to, String subject, String body, String detailAttachment, String summaryAttachment) throws MessagingException, IOException;
-
-    @Override
-    public void onApplicationEvent(AppInfoRetrievedEvent event) {
-        String body = applyBody();
-        String detailAttachment = applyDetailAttachment(event);
-        String summaryAttachment = applySummaryAttachment(event);
-        log.info(detailAttachment);
-        log.info(summaryAttachment);
-        mailSettings.getRecipients().forEach(r -> {
-            try {
-                sendMail(r, mailSettings.getSubject(), body, detailAttachment, summaryAttachment);
-            } catch (MessagingException | IOException e) {
-                log.error("Could not send email!", e);
-            }
-        });
-        
-    }
-
-    private String applyBody() {
+    protected String applyBody() {
         StringBuffer body = new StringBuffer();
         body.append("Please find attached application inventory detail and summary reports from ");
         body.append(appSettings.getApiHost());
@@ -57,7 +30,7 @@ public abstract class AppNotifier implements ApplicationListener<AppInfoRetrieve
         return body.toString();
     }
     
-    private String applyDetailAttachment(AppInfoRetrievedEvent event) {
+    protected String applyDetailAttachment(AppInfoRetrievedEvent event) {
         StringBuffer attachment = new StringBuffer();
         attachment.append("\n");
         attachment.append(AppDetail.headers());
@@ -70,7 +43,7 @@ public abstract class AppNotifier implements ApplicationListener<AppInfoRetrieve
         return attachment.toString();
     }
     
-    private String applySummaryAttachment(AppInfoRetrievedEvent event) {
+    protected String applySummaryAttachment(AppInfoRetrievedEvent event) {
         AppMetrics metrics = new AppMetrics(event.getDetail());
         StringBuffer attachment = new StringBuffer();
         

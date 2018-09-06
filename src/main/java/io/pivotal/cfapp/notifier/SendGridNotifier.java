@@ -1,4 +1,4 @@
-package io.pivotal.cfapp.mail;
+package io.pivotal.cfapp.notifier;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -21,7 +21,7 @@ import io.pivotal.cfapp.config.MailSettings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SendGridNotifier extends AppNotifier {
+public class SendGridNotifier extends EmailNotifier {
     
     private SendGrid sendGrid;
     

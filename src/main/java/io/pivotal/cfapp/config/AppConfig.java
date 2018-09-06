@@ -19,8 +19,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.sendgrid.SendGrid;
 
-import io.pivotal.cfapp.mail.JavaMailNotifier;
-import io.pivotal.cfapp.mail.SendGridNotifier;
+import io.pivotal.cfapp.notifier.JavaMailNotifier;
+import io.pivotal.cfapp.notifier.SendGridNotifier;
 
 @EnableScheduling
 @Configuration

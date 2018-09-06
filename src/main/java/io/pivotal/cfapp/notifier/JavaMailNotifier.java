@@ -1,4 +1,4 @@
-package io.pivotal.cfapp.mail;
+package io.pivotal.cfapp.notifier;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import io.pivotal.cfapp.config.AppSettings;
 import io.pivotal.cfapp.config.MailSettings;
 
-public class JavaMailNotifier extends AppNotifier {
+public class JavaMailNotifier extends EmailNotifier {
 
     private final JavaMailSender javaMailSender;
     
