@@ -215,6 +215,20 @@ all,44
 Total applications: 36
 ```
 
+## On-demand Endpoints
+
+For additional convenenience REST endpoints have been exposed for on-demand reporting.  Report results are refreshed on the `cron` schedule mentioned above.
+
+```
+GET /report 
+```
+> Produces `text/plain` output combining detail and summary application info
+
+```
+GET /users
+```
+> Produces `application/json` output containing org/space user/role details. 
+
 ## Credits
 
 Tip of the hat to those who've gone before...

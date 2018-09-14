@@ -1,4 +1,4 @@
-package io.pivotal.cfapp.repository.jdbc;
+package io.pivotal.cfapp.repository;
 
 import java.sql.Timestamp;
 
@@ -70,7 +70,7 @@ public class JdbcAppInfoRepository {
 	}
 
 	public Flux<AppDetail> findAll() {
-		String selectAll = "select id, organization, space, app_name, buildpack, image stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail";
+		String selectAll = "select id, organization, space, app_name, buildpack, image, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail";
 		Flowable<AppDetail> result = database
 			.select(selectAll)
 			.get(rs -> AppDetail

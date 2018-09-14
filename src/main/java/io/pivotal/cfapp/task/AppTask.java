@@ -11,25 +11,36 @@ import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.AppEvent;
 import io.pivotal.cfapp.domain.AppRequest;
 import io.pivotal.cfapp.domain.Buildpack;
+import io.pivotal.cfapp.service.AppInfoService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public abstract class AppTask implements ApplicationRunner {
+@Component
+public class AppTask implements ApplicationRunner {
     
     private DefaultCloudFoundryOperations opsClient;
     private ReactorCloudFoundryClient cloudFoundryClient;
+    private AppInfoService service;
+    private ApplicationEventPublisher publisher;
     
     @Autowired
     public AppTask(
     		DefaultCloudFoundryOperations opsClient,
-    		ReactorCloudFoundryClient cloudFoundryClient) {
+    		ReactorCloudFoundryClient cloudFoundryClient,
+    		AppInfoService service,
+    		ApplicationEventPublisher publisher) {
         this.opsClient = opsClient;
         this.cloudFoundryClient = cloudFoundryClient;
+        this.service = service;
+        this.publisher = publisher;
     }
 
     @Override
@@ -37,7 +48,30 @@ public abstract class AppTask implements ApplicationRunner {
         runTask();
     }
 
-    protected abstract void runTask();
+    @Scheduled(cron = "${cron}")
+    protected void runTask() {
+        service
+            .deleteAll()
+            .thenMany(getOrganizations())
+            .flatMap(spaceRequest -> getSpaces(spaceRequest))
+            .flatMap(appSummaryRequest -> getApplicationSummary(appSummaryRequest))
+            .flatMap(appManifestRequest -> getDockerImage(appManifestRequest))
+            .flatMap(appDetailRequest -> getApplicationDetail(appDetailRequest))
+            .flatMap(withLastEventRequest -> enrichWithAppEvent(withLastEventRequest))
+            .flatMap(service::save)
+            .collectList()
+            .subscribe(r -> 
+                publisher.publishEvent(
+                    new AppInfoRetrievedEvent(
+                            this, 
+                            r, 
+                            service.countApplicationsByBuildpack(),
+                            service.countApplicationsByOrganization(),
+                            service.countApplicationsByDockerImage()
+                    )
+                )
+            );
+    }
     
     protected Flux<AppRequest> getOrganizations() {
         return DefaultCloudFoundryOperations.builder()
@@ -57,7 +91,6 @@ public abstract class AppTask implements ApplicationRunner {
                     .list()
                     .map(ss -> AppRequest.from(request).space(ss.getName()).build());
     }
-    
     
     protected Flux<AppRequest> getApplicationSummary(AppRequest request) {
         return DefaultCloudFoundryOperations.builder()

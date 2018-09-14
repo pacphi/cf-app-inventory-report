@@ -1,4 +1,4 @@
-package io.pivotal.cfapp.repository.mongo;
+package io.pivotal.cfapp.repository;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
@@ -20,7 +20,6 @@ import io.pivotal.cfapp.domain.AppDetail;
 import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
-import io.pivotal.cfapp.repository.AppDetailAggregator;
 
 @Profile("mongo")
 @Component

@@ -1,4 +1,4 @@
-package io.pivotal.cfapp.repository.mongo;
+package io.pivotal.cfapp.repository;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
