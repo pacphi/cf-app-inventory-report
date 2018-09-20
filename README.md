@@ -32,7 +32,26 @@ git clone https://github.com/pacphi/cf-app-inventory-report.git
 
 Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications. 
 
-> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
+> You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and/or [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
+
+### Managing secrets
+
+Place secrets in `config/secrets.json`, e.g.,
+
+```
+{
+	"CF_API-HOST": "xxxxx",
+	"CF_USERNAME": "xxxxx",
+	"CF_PASSWORD": "xxxxx",
+	"MAIL_FROM": "xxxxx",
+	"MAIL_RECIPIENTS": "xxxxx",
+	"SENDGRID_API-KEY": "xxxxx"
+}
+```
+
+We'll use this file later as input configuration for the creation of either a [credhub](https://docs.pivotal.io/credhub-service-broker/using.html) or [user-provided](https://docs.cloudfoundry.org/devguide/services/user-provided.html#credentials) service instance.
+
+> Replace occurrences of `xxxxx` above with appropriate values
 
 ### Minimum required keys
 
@@ -114,8 +133,6 @@ where `{backend_provider}` is either `mongo` or `jdbc`
 
 ## How to deploy to Pivotal Application Service
 
-You may choose to follow the step-by-step instructions below or execute a couple of shell scripts to [deploy](deploy.sh) and/or [shutdown/destroy](destroy.sh) the application.
-
 Authenticate to a foundation using the API endpoint. 
 > E.g., login to [Pivotal Web Services](https://run.pivotal.io)
 
@@ -123,24 +140,22 @@ Authenticate to a foundation using the API endpoint.
 cf login -a https:// api.run.pivotal.io
 ```
 
-Push the app, but don't start it, also disable health check and routing.
+Deploy the app (w/ a user-provided service instance vending secrets)
 
 ```
-cf push get-app-inventory-task -p ./build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar -m 1G --no-start
+./deploy.sh
 ```
 
-Set environment variable for backend
-
-> You have a choice of backends, either `jdbc` or `mongo`
+Deploy the app (w/ a Credhub service instance vending secrets)
 
 ```
-cf set-env get-app-inventory-task SPRING_PROFILES_ACTIVE jdbc
+./deploy.sh --with-credhub
 ```
 
-Start the app
+Shutdown and destroy the app and service instances
 
 ```
-cf start get-app-inventory-task
+./destroy.sh
 ```
 
 ## What does the task do?

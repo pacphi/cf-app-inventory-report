@@ -2,14 +2,22 @@
 
 set -e
 
-if [ $# -ne 1 ]; then
-    echo "Usage: ./deploy.sh {pivotal cloud foundry api endpoint}"
-    exit 1
-fi
+export APP_NAME=cf-app-inventory-report
 
-cf login -a $1
+case "$1" in
 
-cf push get-app-inventory-task -p ./build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar -m 1G --no-start
-cf set-env get-app-inventory-task SPRING_PROFILES_ACTIVE jdbc
-cf start get-app-inventory-task
-
+	--with-credhub | -c)
+	cf push --no-start
+	cf create-service credhub default $APP_NAME-secrets -c config/secrets.json
+	cf bind-service $APP_NAME $APP_NAME-secrets
+	cf start $APP_NAME
+	;;
+	
+	_ | *)
+	cf push --no-start
+	cf create-user-provided-service $APP_NAME-secrets -p config/secrets.json
+	cf bind-service $APP_NAME $APP_NAME-secrets
+	cf start $APP_NAME
+	;;
+		
+esac
