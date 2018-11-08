@@ -1,6 +1,6 @@
 buildscript {
     ext { 
-        springBootVersion = '2.0.5.RELEASE' 
+        springBootVersion = '2.1.0.RELEASE' 
     }
     repositories { 
         mavenCentral() 
@@ -35,7 +35,7 @@ dependencyManagement {
 }
 
 dependencies {
-    compileOnly('org.projectlombok:lombok:1.18.2')
+    compileOnly('org.projectlombok:lombok:1.18.4')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')
     compile('org.apache.commons:commons-lang3:3.7')
     compile('org.springframework.credhub:spring-credhub-cloud-connector:1.0.1.RELEASE')
@@ -52,7 +52,7 @@ dependencies {
     compile('org.cloudfoundry:cloudfoundry-client-reactor:3.13.0.RELEASE')
     compile('org.cloudfoundry:cloudfoundry-operations:3.13.0.RELEASE')
     compile('io.projectreactor:reactor-core:3.1.8.RELEASE')
-    compile('io.projectreactor.ipc:reactor-netty:0.7.8.RELEASE')
+    compile('io.projectreactor.ipc:reactor-netty:0.7.11.RELEASE')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
 }
