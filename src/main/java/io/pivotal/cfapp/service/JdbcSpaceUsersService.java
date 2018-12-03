@@ -14,26 +14,25 @@ import reactor.core.publisher.Mono;
 public class JdbcSpaceUsersService implements SpaceUsersService {
 
 	private JdbcSpaceUsersRepository repo;
-	
-	
+
 	@Autowired
 	public JdbcSpaceUsersService(JdbcSpaceUsersRepository repo) {
 		this.repo = repo;
 	}
-	
+
 	@Override
 	public Mono<Void> deleteAll() {
 		return repo.deleteAll();
 	}
-	
+
 	@Override
 	public Mono<SpaceUsers> save(SpaceUsers entity) {
 		return repo.save(entity);
 	}
-	
+
 	@Override
 	public Flux<SpaceUsers> findAll() {
 		return repo.findAll();
 	}
-	
+
 }

@@ -14,26 +14,25 @@ import reactor.core.publisher.Mono;
 public class MongoSpaceUsersService implements SpaceUsersService {
 
 	private MongoSpaceUsersRepository repo;
-	
-	
+
 	@Autowired
 	public MongoSpaceUsersService(MongoSpaceUsersRepository repo) {
 		this.repo = repo;
 	}
-	
+
 	@Override
 	public Mono<Void> deleteAll() {
 		return repo.deleteAll();
 	}
-	
+
 	@Override
 	public Mono<SpaceUsers> save(SpaceUsers entity) {
 		return repo.save(entity);
 	}
-	
+
 	@Override
 	public Flux<SpaceUsers> findAll() {
 		return repo.findAll();
 	}
-	
+
 }

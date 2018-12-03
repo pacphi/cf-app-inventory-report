@@ -1,6 +1,6 @@
 buildscript {
     ext { 
-        springBootVersion = '2.1.0.RELEASE' 
+        springBootVersion = '2.1.1.RELEASE' 
     }
     repositories { 
         mavenCentral() 
@@ -42,17 +42,17 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-mail')
-    compile('com.sendgrid:sendgrid-java:4.2.1')
+    compile('com.sendgrid:sendgrid-java:4.3.0')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
-    compile('com.github.davidmoten:rxjava2-jdbc:0.1-RC38')
+    compile('com.github.davidmoten:rxjava2-jdbc:0.1-RC42')
     compile('org.springframework:spring-jdbc')
     compile('com.zaxxer:HikariCP:3.2.0')
     runtime('org.hsqldb:hsqldb:2.4.1')
     compile('de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1')
     compile('org.cloudfoundry:cloudfoundry-client-reactor:3.13.0.RELEASE')
     compile('org.cloudfoundry:cloudfoundry-operations:3.13.0.RELEASE')
-    compile('io.projectreactor:reactor-core:3.1.8.RELEASE')
-    compile('io.projectreactor.ipc:reactor-netty:0.7.11.RELEASE')
+    compile('io.projectreactor:reactor-core:3.2.3.RELEASE')
+    compile('io.projectreactor.ipc:reactor-netty:0.7.12.RELEASE')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
 }

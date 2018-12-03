@@ -3,9 +3,12 @@ applications:
 - name: cf-app-inventory-report
   memory: 1G
   random-route: true
-  buildpack: java_buildpack_offline
+  stack: cflinuxfs3
+  buildpacks: 
+    - java_buildpack_offline
   path: build/libs/cf-app-inventory-report-0.1-SNAPSHOT.jar
   instances: 1
   env:
     JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
     SPRING_PROFILES_ACTIVE: secrets,cloud
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'

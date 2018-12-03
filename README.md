@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/pacphi/cf-app-inventory-report.svg?branch=app-deploy)](https://travis-ci.org/pacphi/cf-app-inventory-report) [![Known Vulnerabilities](https://snyk.io/test/github/pacphi/cf-app-inventory-report/badge.svg)](https://snyk.io/test/github/pacphi/cf-app-inventory-report)
 
-This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [HSQL](http://hsqldb.org) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis. 
+This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [HSQL](http://hsqldb.org) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis.
 
 ## Prerequisites
 
 Required
 
-* [Pivotal Application Service](https://pivotal.io/platform/pivotal-application-service) account 
+* [Pivotal Application Service](https://pivotal.io/platform/pivotal-application-service) account
 
 Optional
 
@@ -18,9 +18,9 @@ Optional
 
 ## Tools
 
-* [git](https://git-scm.com/downloads) 2.17.1 or better
-* [JDK](http://openjdk.java.net/install/) 8u162 or better
-* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.37.0 or better
+* [git](https://git-scm.com/downloads) 2.19.2 or better
+* [JDK](http://openjdk.java.net/install/) 11 or better
+* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.40.0 or better
 
 ## Clone
 
@@ -30,7 +30,7 @@ git clone https://github.com/pacphi/cf-app-inventory-report.git
 
 ## How to configure
 
-Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications. 
+Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications.
 
 > You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and/or [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
 
@@ -69,13 +69,13 @@ At a minimum you should supply values for the following keys
 * `spring.mail.host` - an SMTP host
 * `spring.mail.username` - an email account username
 * `spring.mail.password` - an email account password
-* `mail.from` - originator email address 
+* `mail.from` - originator email address
 * `mail.recipients` - email addresses that will be sent an email with CSV attachments
 
 ### for sendgrid
 
 * `spring.sendgrid.api-key` - an api key for your SendGrid account
-* `mail.from` - originator email address 
+* `mail.from` - originator email address
 * `mail.recipients` - email addresses that will be sent an email with CSV attachments
 
 ### to choose between backends
@@ -133,7 +133,7 @@ where `{backend_provider}` is either `mongo` or `jdbc`
 
 ## How to deploy to Pivotal Application Service
 
-Authenticate to a foundation using the API endpoint. 
+Authenticate to a foundation using the API endpoint.
 > E.g., login to [Pivotal Web Services](https://run.pivotal.io)
 
 ```
@@ -164,7 +164,7 @@ Utilizes cf CLI to query foundation for application details across all organizat
 
 ### Subject
 
-Sample 
+Sample
 
 ```
 PCF Application Inventory Report
@@ -172,7 +172,7 @@ PCF Application Inventory Report
 
 ### Body
 
-Sample 
+Sample
 
 ```
 Please find attached application inventory detail and summary reports from api.run.pivotal.io generated 2018-05-30T10:55:08.247.
@@ -235,7 +235,7 @@ Total applications: 36
 For additional convenenience REST endpoints have been exposed for on-demand reporting.  Report results are refreshed on the `cron` schedule mentioned above.
 
 ```
-GET /report 
+GET /report
 ```
 > Produces `text/plain` output combining detail and summary application info
 

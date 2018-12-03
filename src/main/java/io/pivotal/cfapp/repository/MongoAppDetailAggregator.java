@@ -31,7 +31,7 @@ public class MongoAppDetailAggregator implements AppDetailAggregator {
     public MongoAppDetailAggregator(ReactiveMongoTemplate reactiveMongoTemplate) {
         this.reactiveMongoTemplate = reactiveMongoTemplate;
     }
-    
+
     public List<BuildpackCount> countApplicationsByBuildpack() {
         Aggregation agg = newAggregation(
             project("buildpack"),
@@ -45,7 +45,7 @@ public class MongoAppDetailAggregator implements AppDetailAggregator {
                     .toStream()
                         .collect(Collectors.toList());
     }
-    
+
     public List<OrganizationCount> countApplicationsByOrganization() {
         Aggregation agg = newAggregation(
             project("organization"),
@@ -74,5 +74,5 @@ public class MongoAppDetailAggregator implements AppDetailAggregator {
 	                    .toStream()
 	                        .collect(Collectors.toList());
 	}
-    
+
 }

@@ -12,12 +12,12 @@ import reactor.core.publisher.Flux;
 public class SpaceUsersController {
 
 	private SpaceUsersService service;
-	
+
 	@Autowired
 	public SpaceUsersController(SpaceUsersService service) {
 		this.service = service;
 	}
-	
+
 	@GetMapping("/users")
 	public Flux<SpaceUsers> getUsers() {
 		return service.findAll();

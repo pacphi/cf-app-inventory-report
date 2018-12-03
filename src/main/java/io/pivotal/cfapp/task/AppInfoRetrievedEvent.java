@@ -13,25 +13,36 @@ public class AppInfoRetrievedEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<AppDetail> detail;
-    private final List<BuildpackCount> buildpackCounts;
-    private final List<OrganizationCount> organizationCounts;
-    private final List<DockerImageCount> dockerImages;
-    
-    public AppInfoRetrievedEvent(
-            Object source, 
-            List<AppDetail> detail, 
-            List<BuildpackCount> buildpackCounts,
-            List<OrganizationCount> organizationCounts,
-            List<DockerImageCount> dockerImages
-            ) {
+    private List<AppDetail> detail;
+    private List<BuildpackCount> buildpackCounts;
+    private List<OrganizationCount> organizationCounts;
+    private List<DockerImageCount> dockerImages;
+
+    public AppInfoRetrievedEvent(Object source) {
         super(source);
-        this.detail = detail;
-        this.buildpackCounts = buildpackCounts;
-        this.organizationCounts = organizationCounts;
-        this.dockerImages = dockerImages;
     }
-    
+
+    public AppInfoRetrievedEvent detail(List<AppDetail> detail) {
+        this.detail = detail;
+        return this;
+    }
+
+    public AppInfoRetrievedEvent buildpackCounts(List<BuildpackCount> buildpackCounts) {
+        this.buildpackCounts = buildpackCounts;
+        return this;
+    }
+
+    public AppInfoRetrievedEvent organizationCounts(List<OrganizationCount> organizationCounts) {
+        this.organizationCounts = organizationCounts;
+        return this;
+    }
+
+    public AppInfoRetrievedEvent dockerImages(List<DockerImageCount> dockerImages) {
+        this.dockerImages = dockerImages;
+        return this;
+    }
+
+
     public List<AppDetail> getDetail() {
         return detail;
     }
@@ -39,13 +50,13 @@ public class AppInfoRetrievedEvent extends ApplicationEvent {
     public List<BuildpackCount> getBuildpackCounts() {
         return buildpackCounts;
     }
-    
+
     public List<OrganizationCount> getOrganizationCounts() {
         return organizationCounts;
     }
-    
+
     public List<DockerImageCount> getDockerImages() {
     	return dockerImages;
     }
-    
+
 }

@@ -15,10 +15,10 @@ import reactor.core.publisher.Flux;
 
 @Component
 public class SpaceUsersTask implements ApplicationRunner {
-    
+
     private DefaultCloudFoundryOperations opsClient;
     private SpaceUsersService service;
-    
+
     @Autowired
     public SpaceUsersTask(
     		DefaultCloudFoundryOperations opsClient,
@@ -42,7 +42,7 @@ public class SpaceUsersTask implements ApplicationRunner {
             .flatMap(service::save)
             .subscribe();
     }
-    
+
     protected Flux<AppRequest> getOrganizations() {
         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -51,7 +51,7 @@ public class SpaceUsersTask implements ApplicationRunner {
                     .list()
                     .map(os -> AppRequest.builder().organization(os.getName()).build());
     }
-    
+
     protected Flux<AppRequest> getSpaces(AppRequest request) {
         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -61,7 +61,7 @@ public class SpaceUsersTask implements ApplicationRunner {
                     .list()
                     .map(ss -> AppRequest.from(request).space(ss.getName()).build());
     }
-    
+
     protected Flux<SpaceUsers> getSpaceUsers(AppRequest request) {
     	return DefaultCloudFoundryOperations.builder()
                 .from(opsClient)
@@ -86,5 +86,5 @@ public class SpaceUsersTask implements ApplicationRunner {
                 							.build()
 						);
     }
-    
+
 }

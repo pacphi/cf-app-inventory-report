@@ -23,7 +23,7 @@ public class JdbcSpaceUsersRepository {
 
 	private Database database;
 	private ObjectMapper mapper;
-	
+
 	@Autowired
 	public JdbcSpaceUsersRepository(
 			Database database,
@@ -31,7 +31,7 @@ public class JdbcSpaceUsersRepository {
 		this.database = database;
 		this.mapper = mapper;
 	}
-	
+
 	public Mono<Void> deleteAll() {
 		String deleteAll = "delete from space_users";
 		Flowable<Integer> result = database
@@ -39,7 +39,7 @@ public class JdbcSpaceUsersRepository {
 			.counts();
 		return Flux.from(result).then();
 	}
-	
+
 	public Mono<SpaceUsers> save(SpaceUsers entity) {
 		String createOne = "insert into space_users (organization, space, auditors, managers, developers) values (?, ?, ?, ?, ?)";
 		Flowable<Integer> insert = database
@@ -53,7 +53,7 @@ public class JdbcSpaceUsersRepository {
 			)
 			.returnGeneratedKeys()
 			.getAs(Integer.class);
-		
+
 		String selectOne = "select id, organization, space, auditors, managers, developers from space_users where id = ?";
 		Flowable<SpaceUsers> result = database
 			.select(selectOne)
@@ -69,7 +69,7 @@ public class JdbcSpaceUsersRepository {
 						.build());
 		return Mono.from(result);
 	}
-	
+
 	public Flux<SpaceUsers> findAll() {
 		String selectAll = "select id, organization, space, auditors, managers, developers from space_users";
 		Flowable<SpaceUsers> result = database
@@ -85,7 +85,7 @@ public class JdbcSpaceUsersRepository {
 						.build());
 		return Flux.from(result);
 	}
-	
+
 	private String toJson(List<String> list) {
 		try {
 			return mapper.writeValueAsString(list);
@@ -93,7 +93,7 @@ public class JdbcSpaceUsersRepository {
 			throw new RuntimeException(jpe);
 		}
 	}
-	
+
 	private List<String> toList(String json) {
 		try {
 			return mapper.readValue(

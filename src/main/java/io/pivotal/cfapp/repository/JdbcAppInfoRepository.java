@@ -17,12 +17,12 @@ import reactor.core.publisher.Mono;
 public class JdbcAppInfoRepository {
 
 	private Database database;
-	
+
 	@Autowired
 	public JdbcAppInfoRepository(Database database) {
 		this.database = database;
 	}
-	
+
 	public Mono<AppDetail> save(AppDetail entity) {
 		String createOne = "insert into app_detail (organization, space, app_name, buildpack, image, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		Flowable<Integer> insert = database
@@ -44,7 +44,7 @@ public class JdbcAppInfoRepository {
 			)
 			.returnGeneratedKeys()
 			.getAs(Integer.class);
-		
+
 		String selectOne = "select id, organization, space, app_name, buildpack, image, stack, running_instances, total_instances, urls, last_pushed, last_event, last_event_actor, requested_state from app_detail where id = ?";
 		Flowable<AppDetail> result = database
 			.select(selectOne)

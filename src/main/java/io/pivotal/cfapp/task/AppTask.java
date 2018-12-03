@@ -25,12 +25,12 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class AppTask implements ApplicationRunner {
-    
+
     private DefaultCloudFoundryOperations opsClient;
     private ReactorCloudFoundryClient cloudFoundryClient;
     private AppInfoService service;
     private ApplicationEventPublisher publisher;
-    
+
     @Autowired
     public AppTask(
     		DefaultCloudFoundryOperations opsClient,
@@ -62,17 +62,15 @@ public class AppTask implements ApplicationRunner {
             .collectList()
             .subscribe(r -> 
                 publisher.publishEvent(
-                    new AppInfoRetrievedEvent(
-                            this, 
-                            r, 
-                            service.countApplicationsByBuildpack(),
-                            service.countApplicationsByOrganization(),
-                            service.countApplicationsByDockerImage()
-                    )
+                    new AppInfoRetrievedEvent(this)
+                        .detail(r)
+                        .buildpackCounts(service.countApplicationsByBuildpack())
+                        .organizationCounts(service.countApplicationsByOrganization())
+                        .dockerImages(service.countApplicationsByDockerImage())
                 )
             );
     }
-    
+
     protected Flux<AppRequest> getOrganizations() {
         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -81,7 +79,7 @@ public class AppTask implements ApplicationRunner {
                     .list()
                     .map(os -> AppRequest.builder().organization(os.getName()).build());
     }
-    
+
     protected Flux<AppRequest> getSpaces(AppRequest request) {
         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -91,7 +89,7 @@ public class AppTask implements ApplicationRunner {
                     .list()
                     .map(ss -> AppRequest.from(request).space(ss.getName()).build());
     }
-    
+
     protected Flux<AppRequest> getApplicationSummary(AppRequest request) {
         return DefaultCloudFoundryOperations.builder()
             .from(opsClient)
@@ -102,7 +100,7 @@ public class AppTask implements ApplicationRunner {
                     .list()
                     .map(as -> AppRequest.from(request).id(as.getId()).appName(as.getName()).build());
     }
-    
+
     protected Mono<AppRequest> getDockerImage(AppRequest request) {
     	return cloudFoundryClient
 				.applicationsV2()
@@ -110,7 +108,7 @@ public class AppTask implements ApplicationRunner {
 	    			.onErrorResume(e -> Mono.empty())
 	    			.map(gar -> AppRequest.from(request).image(gar.getEntity().getDockerImage()).build());
     }
-    
+
     // Added onErrorResume as per https://stackoverflow.com/questions/48243630/is-there-a-way-in-reactor-to-ignore-error-signals
     // to address org.cloudfoundry.client.v2.ClientV2Exception: CF-NoAppDetectedError(170003): An app was not successfully detected by any available buildpack
     // which results in some undesirable but tolerable data loss
@@ -141,7 +139,7 @@ public class AppTask implements ApplicationRunner {
                                     .requestedState(a.getRequestedState().toLowerCase())
                                     .build());
     }
-    
+
     private String toTruncatedString(List<String> urls) {
     	String rawData = String.join(",", urls);
     	return rawData.length() <= 1000 ? rawData : rawData.substring(0, 1000);  

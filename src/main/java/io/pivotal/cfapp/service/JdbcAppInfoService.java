@@ -21,38 +21,38 @@ public class JdbcAppInfoService implements AppInfoService {
 
 	private JdbcAppInfoRepository repo;
 	private AppDetailAggregator aggregator;
-	
+
 	@Autowired
 	public JdbcAppInfoService(JdbcAppInfoRepository repo, AppDetailAggregator aggregator) {
 		this.repo = repo;
 		this.aggregator = aggregator;
 	}
-	
+
 	@Override
 	public Mono<Void> deleteAll() {
 		return repo.deleteAll();
 	}
-	
+
 	@Override
 	public Mono<AppDetail> save(AppDetail entity) {
 		return repo.save(entity);
 	}
-	
+
 	@Override
 	public Flux<AppDetail> findAll() {
 		return repo.findAll();
 	}
-	
+
 	@Override
 	public List<BuildpackCount> countApplicationsByBuildpack() {
 		return aggregator.countApplicationsByBuildpack();
 	}
-	
+
 	@Override
 	public List<OrganizationCount> countApplicationsByOrganization() {
 		return aggregator.countApplicationsByOrganization();
 	}
-	
+
 	@Override
 	public List<DockerImageCount> countApplicationsByDockerImage() {
 		return aggregator.countApplicationsByDockerImage();
