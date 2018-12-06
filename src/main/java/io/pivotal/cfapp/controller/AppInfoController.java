@@ -1,5 +1,7 @@
 package io.pivotal.cfapp.controller;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,7 @@ public class AppInfoController {
 						.organizationCounts(service.countApplicationsByOrganization())
 						.dockerImages(service.countApplicationsByDockerImage())
 				)
+				.delayElement(Duration.ofMillis(500))
 		        .map(event -> ResponseEntity.ok(
 		        	String.join(
 		        			"\n\n",

@@ -45,7 +45,7 @@ public class AppTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        runTask();
+        // do nothing; cron managed
     }
 
     @Scheduled(cron = "${cron}")
