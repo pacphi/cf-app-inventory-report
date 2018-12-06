@@ -70,8 +70,25 @@ public class JdbcSpaceUsersRepository {
 		return Mono.from(result);
 	}
 
+	public Mono<SpaceUsers> findByOrganizationAndSpace(String organization, String space) {
+		String selectOne = "select id, organization, space, auditors, managers, developers from space_users where organization = ? and space = ?";
+		Flowable<SpaceUsers> result = database
+			.select(selectOne)
+			.parameters(organization, space)
+			.get(rs -> SpaceUsers
+						.builder()
+						.id(String.valueOf(rs.getInt(1)))
+						.organization(rs.getString(2))
+						.space(rs.getString(3))
+						.auditors(toList(rs.getString(4)))
+						.managers(toList(rs.getString(5)))
+						.developers(toList(rs.getString(6)))
+						.build());
+		return Mono.from(result);
+	}
+
 	public Flux<SpaceUsers> findAll() {
-		String selectAll = "select id, organization, space, auditors, managers, developers from space_users";
+		String selectAll = "select id, organization, space, auditors, managers, developers from space_users order by organization, space";
 		Flowable<SpaceUsers> result = database
 			.select(selectAll)
 			.get(rs -> SpaceUsers

@@ -35,4 +35,9 @@ public class JdbcSpaceUsersService implements SpaceUsersService {
 		return repo.findAll();
 	}
 
+	@Override
+	public Mono<SpaceUsers> findByOrganizationAndSpace(String organization, String space) {
+		return repo.findByOrganizationAndSpace(organization, space);
+	}
+
 }

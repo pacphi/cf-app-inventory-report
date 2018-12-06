@@ -242,7 +242,12 @@ GET /report
 ```
 GET /users
 ```
-> Produces `application/json` output containing org/space user/role details. 
+> Produces `application/json` output containing user/role details for all orgs/spaces. 
+
+```
+GET /users/{organization}/{space}
+```
+> Produces `application/json` output containing user/role details for one org/space.
 
 ## Credits
 
