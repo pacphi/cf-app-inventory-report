@@ -19,8 +19,8 @@ public class UsersController {
 		this.service = service;
 	}
 
-	@GetMapping("/space/users")
-	public Flux<SpaceUsers> getSpaceUsers() {
+	@GetMapping("/users")
+	public Flux<SpaceUsers> getUsers() {
 		return service.findAll();
 	}
 
