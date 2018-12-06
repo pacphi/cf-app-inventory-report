@@ -63,8 +63,8 @@ public class AppConfig {
             .connectionContext(connectionContext)
             .tokenProvider(tokenProvider)
             .build();
-    }   
-    
+    }
+
     @Bean
     DefaultCloudFoundryOperations opsClient(ReactorCloudFoundryClient cloudFoundryClient, 
             ReactorDopplerClient dopplerClient, ReactorUaaClient uaaClient) {
@@ -74,23 +74,23 @@ public class AppConfig {
                 .uaaClient(uaaClient)
                 .build();
     }
-    
+
     @Bean(name = "applicationEventMulticaster")
     public ApplicationEventMulticaster simpleApplicationEventMulticaster() {
         SimpleApplicationEventMulticaster eventMulticaster 
           = new SimpleApplicationEventMulticaster();
-         
+
         eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
         return eventMulticaster;
     }
-    
+
     @Bean
     @ConditionalOnProperty(prefix="notification", name="engine", havingValue="java-mail")
     public JavaMailNotifier javaMailNotifier(
             AppSettings appSettings, MailSettings mailSettings, JavaMailSender javaMailSender) {
         return new JavaMailNotifier(appSettings, mailSettings, javaMailSender);
     }
-    
+
     @Bean
     @ConditionalOnProperty(prefix="notification", name="engine", havingValue="sendgrid")
     public SendGridNotifier sendGridNotifier(

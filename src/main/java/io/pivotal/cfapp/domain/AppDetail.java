@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor(access=AccessLevel.PACKAGE)
 @ToString
 public class AppDetail {
-    
+
     @Id
     private String id;
     private String organization;

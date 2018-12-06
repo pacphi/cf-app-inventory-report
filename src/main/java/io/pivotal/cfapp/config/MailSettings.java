@@ -15,5 +15,5 @@ public class MailSettings {
     private String from;
     private List<String> recipients;
     private String subject;
-    
+
 }

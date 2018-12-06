@@ -32,7 +32,7 @@ import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
 import de.flapdoodle.embed.process.store.IArtifactStore;
 import io.pivotal.cfapp.config.AdditionalEmbeddedMongoProperties;
- 
+
 
 @Profile("mongo")
 @Configuration
@@ -40,11 +40,11 @@ import io.pivotal.cfapp.config.AdditionalEmbeddedMongoProperties;
 @AutoConfigureAfter(EmbeddedMongoAutoConfiguration.class)
 public class MongoConfig extends AbstractReactiveMongoConfiguration {
     private final Environment environment;
- 
+
     public MongoConfig(Environment environment) {
         this.environment = environment;
     }
- 
+
     @Override
     @Bean
     @DependsOn("embeddedMongoServer")
@@ -52,7 +52,7 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration {
         int port = environment.getProperty("local.mongo.port", Integer.class);
         return MongoClients.create(String.format("mongodb://localhost:%d", port));
     }
-    
+
     @Bean
     public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory() {
         return new SimpleReactiveMongoDatabaseFactory(reactiveMongoClient(), getDatabaseName());
@@ -64,7 +64,7 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration {
             MongoConverter converter) {
         return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
     }
- 
+
     @Override
     protected String getDatabaseName() {
         return "cf-application-inventory";

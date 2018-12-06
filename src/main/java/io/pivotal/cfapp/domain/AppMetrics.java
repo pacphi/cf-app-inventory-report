@@ -8,36 +8,36 @@ import java.util.stream.Collectors;
 public class AppMetrics {
 
     private static LocalDate NOW = LocalDate.now();
-    
+
     private List<AppDetail> detail;
-    
+
     public AppMetrics(List<AppDetail> detail) {
         this.detail = detail;
     }
-    
+
     public static String pushHeaders() {
         return "last pushed,application total";
     }
-    
+
     public static String instanceStateHeaders() {
         return "state,instance total";
     }
     public Integer totalApplications() {
         return detail.size();
     }
-    
+
     public Integer totalApplicationInstances() {
         return detail.stream().mapToInt(i -> i.getTotalInstances()).sum();
     }
-    
+
     public Integer totalStartedInstances() {
         return detail.stream().filter(i -> i.getRequestedState().equals("started")).mapToInt(i -> i.getTotalInstances()).sum();
     }
-    
+
     public Integer totalStoppedInstances() {
         return detail.stream().filter(i -> i.getRequestedState().equals("stopped")).mapToInt(i -> i.getTotalInstances()).sum();
     }
-    
+
     public Integer pushedInLastDay() {
         return detail
                 .stream()
@@ -48,7 +48,7 @@ public class AppMetrics {
                     .collect(Collectors.toList())
                     .size();
     }
-    
+
     public Integer pushedInLastWeek() {
         return detail
                 .stream()
@@ -60,7 +60,7 @@ public class AppMetrics {
                     .collect(Collectors.toList())
                     .size();
     }
-    
+
     public Integer pushedInLastMonth() {
         return detail
                 .stream()
@@ -72,7 +72,7 @@ public class AppMetrics {
                     .collect(Collectors.toList())
                     .size();
     }
-    
+
     public Integer pushedInLastThreeMonths() {
         return detail
                 .stream()
@@ -84,7 +84,7 @@ public class AppMetrics {
                     .collect(Collectors.toList())
                     .size();
     }
-    
+
     public Integer pushedInLastSixMonths() {
         return detail
                 .stream()
@@ -96,7 +96,7 @@ public class AppMetrics {
                     .collect(Collectors.toList())
                     .size();
     }
-    
+
     public Integer pushedInLastYear() {
         return detail
                 .stream()
@@ -108,7 +108,7 @@ public class AppMetrics {
                     .collect(Collectors.toList())
                     .size();
     }
-    
+
     public Integer pushedBeyondOneYear() {
         return detail
                 .stream()

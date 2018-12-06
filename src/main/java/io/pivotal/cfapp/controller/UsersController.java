@@ -9,17 +9,19 @@ import io.pivotal.cfapp.service.SpaceUsersService;
 import reactor.core.publisher.Flux;
 
 @RestController
-public class SpaceUsersController {
+public class UsersController {
 
-	private SpaceUsersService service;
+	private final SpaceUsersService service;
 
 	@Autowired
-	public SpaceUsersController(SpaceUsersService service) {
+	public UsersController(
+		SpaceUsersService service) {
 		this.service = service;
 	}
 
-	@GetMapping("/users")
-	public Flux<SpaceUsers> getUsers() {
+	@GetMapping("/space/users")
+	public Flux<SpaceUsers> getSpaceUsers() {
 		return service.findAll();
 	}
+
 }

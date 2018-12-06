@@ -43,4 +43,5 @@ public class DatabaseCreator implements ApplicationRunner {
         c.prepareStatement("create table space_users ( id int identity primary key, organization varchar(100), space varchar(100), auditors clob(20M), managers clob(20M), developers clob(20M) )")
 			.execute();
 	}
+
 }

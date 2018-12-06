@@ -11,11 +11,11 @@ public class DockerImageCount {
 
 	private String image;
     private long total;
-    
+
     public String toCsv() {
         return String.join(",", image, String.valueOf(total));
     }
-    
+
     public static String headers() {
         return String.join(",", "docker image", "total");
     }

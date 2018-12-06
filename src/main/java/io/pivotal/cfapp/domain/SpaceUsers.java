@@ -29,7 +29,7 @@ public class SpaceUsers {
 	private List<String> auditors;
 	private List<String> developers;
 	private List<String> managers;
-	
+
 	public Set<String> getUsers() {
 		Set<String> users = new HashSet<>();
 		users.addAll(auditors);
@@ -37,7 +37,7 @@ public class SpaceUsers {
 		users.addAll(managers);
 		return users;
 	}
-	
+
 	public Integer getUserCount() {
 		return getUsers().size();
 	}

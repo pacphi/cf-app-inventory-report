@@ -9,20 +9,20 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Buildpack {
 
-    private static String[] packs = 
-        {   "staticfile", "java", "ruby", "nodejs", 
+    private static String[] packs =
+        {   "staticfile", "java", "ruby", "nodejs",
             "go", "python", "php", "dotnet",
-            "hwc", "binary", "tomcat", "liberty", 
+            "hwc", "binary", "tomcat", "liberty",
             "jboss", "apt", "nginx", "clojure", "haskell",
             "tomee", "jetty", "meteor", "erlang", "elixir",
             "swift", "rust", "emberjs", "pyspark", "tc",
             "weblogic" };
-    
+
     public static String is(String input) {
         if (StringUtils.isBlank(input)) {
             return "unknown";
         }
-        Set<String> candidate = 
+        Set<String> candidate =
                 Arrays.asList(packs)
                         .stream()
                             .filter(p -> input.contains(p))
@@ -33,7 +33,7 @@ public class Buildpack {
             return "unknown";
         }
     }
-    
+
     public static List<String> list() {
         return Arrays.asList(packs);
     }
