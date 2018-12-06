@@ -80,7 +80,7 @@ public class SpaceUsersTask implements ApplicationRunner {
                         .flux()
                         .onErrorContinue(
                             NullPointerException.class, 
-                            (data, e) -> OperationsLogging.log("Could not obtain subset of users in space. " + data.getMessage()))
+                            (ex, data) -> OperationsLogging.log("Could not obtain subset of users in space. " + ex.getMessage()))
                         .next()
                 		.map(su -> SpaceUsers
                 						.builder()
