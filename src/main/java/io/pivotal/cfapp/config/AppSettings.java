@@ -13,5 +13,6 @@ public class AppSettings {
     private String apiHost;
     private String username;
     private String password;
+    private String passcode;
 
 }

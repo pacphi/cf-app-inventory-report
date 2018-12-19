@@ -13,6 +13,7 @@ import io.pivotal.cfapp.domain.UserRequest;
 import io.pivotal.cfapp.domain.SpaceUsers;
 import io.pivotal.cfapp.service.SpaceUsersService;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -31,11 +32,12 @@ public class SpaceUsersTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // do nothing; cron managed
+        runTask();
     }
 
     @Scheduled(cron = "${cron}")
     protected void runTask() {
+        Hooks.onOperatorDebug();
         service
             .deleteAll()
             .thenMany(getOrganizations())

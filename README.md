@@ -58,8 +58,19 @@ We'll use this file later as input configuration for the creation of either a [c
 At a minimum you should supply values for the following keys
 
 * `cf.apiHost` - a Pivotal Application Service API endpoint
+* `token.provider` - Authorization token provider, options are: `userpass` or `sso`
+
+Based on choice the authorization token provider
+
+#### Username and password
+
 * `cf.username` - a Pivotal Application Service account username (typically an administrator account)
 * `cf.password` - a Pivotal Application Service account password
+
+#### Single-sign on
+
+* `cf.passcode` - a temporary one-time passcode
+
 * `notification.engine` - email provider, options are: `none`, `java-mail` or `sendgrid`
 
 > If you set the email provider to `none`, then no email will be delivered
@@ -133,11 +144,42 @@ where `{backend_provider}` is either `mongo` or `jdbc`
 
 ## How to deploy to Pivotal Application Service
 
+### with Username and password authorization 
+
+The following instructions explain how to get started when `token.provider` is set to `userpass`
+
 Authenticate to a foundation using the API endpoint.
-> E.g., login to [Pivotal Web Services](https://run.pivotal.io)
+> E.g., login to [Pivotal Web Services](https://login.run.pivotal.io)
 
 ```
-cf login -a https:// api.run.pivotal.io
+cf login -a https://api.run.pivotal.io
+```
+
+### with SSO authorization
+
+The following instructions explain how to get started when `token.provider` is set to `sso`
+
+Authenticate to a foundation using the API endpoint
+> E.g., login to [Pivotal Web Services](https://login.run.pcfone.io)
+
+```
+cf login -a https://api.run.pcfone.io -sso
+```
+
+Visit the link in the password prompt to retrieve a temporary passcode (e.g., https://login.run.pcfone.io/passcode)
+
+> Complete the login process
+
+Visit https://login.run.pcfone.io/passcode again
+
+Make a note of the passcode because you will need to use it in your `config/secrets.json` which at a minimum should contain
+
+```
+{
+  "TOKEN_PROVIDER": "sso",
+  "CF_API-HOST": "xxxxx",
+  "CF_PASSCODE": "xxxxx",
+}
 ```
 
 Deploy the app (w/ a user-provided service instance vending secrets)

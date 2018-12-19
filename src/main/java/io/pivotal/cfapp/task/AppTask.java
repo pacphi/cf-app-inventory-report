@@ -21,6 +21,7 @@ import io.pivotal.cfapp.domain.AppRequest;
 import io.pivotal.cfapp.domain.Buildpack;
 import io.pivotal.cfapp.service.AppInfoService;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -45,11 +46,12 @@ public class AppTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // do nothing; cron managed
+        runTask();
     }
 
     @Scheduled(cron = "${cron}")
     protected void runTask() {
+        Hooks.onOperatorDebug();
         service
             .deleteAll()
             .thenMany(getOrganizations())
@@ -59,6 +61,7 @@ public class AppTask implements ApplicationRunner {
             .flatMap(appDetailRequest -> getApplicationDetail(appDetailRequest))
             .flatMap(withLastEventRequest -> enrichWithAppEvent(withLastEventRequest))
             .flatMap(service::save)
+            .log()
             .collectList()
             .subscribe(r -> 
                 publisher.publishEvent(
