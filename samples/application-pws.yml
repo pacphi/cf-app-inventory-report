@@ -1,0 +1,95 @@
+cf:
+  apiHost: api.run.pivotal.io
+  username: you@mail.me
+  password: xxxxxx
+
+spring:
+  profiles.include: jdbc
+
+logging:
+  level:
+    de.flapdoodle.embed.mongo: INFO
+    org.springframework: INFO
+    com.sendgrid: DEBUG
+    org.cloudfoundry.reactor: DEBUG
+
+# Options are: none, java-mail or sendgrid
+notification:
+  engine: none
+
+# Set schedule for this task to adhere to
+# @see https://crontab.guru for help, first parameter is seconds
+cron: "0 0 8 * * 1"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: beans,env,info,health,metrics,scheduledtasks,loggers,logfile
+
+---
+spring:
+  profiles: mongo
+
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+  mongodb:
+    embedded:
+      version: 3.4.15
+      download:
+        path: https://fastdl.mongodb.org/
+        alternate: true
+
+---
+spring:
+  profiles: jdbc
+
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+    - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+    - org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
+    - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+    - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
+
+  datasource:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:mem:cf-application-inventory
+    username: sa
+    password: 
+
+---
+## Assumes naming convention for secrets service
+## Name of credhub service instance must be cf-app-inventory-report-secrets
+spring:
+  profiles: secrets
+  profiles.include: 
+  - jdbc
+
+  credhub:
+    url: https://credhub.service.cf.internal:8844
+
+  mail:
+    host: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_HOST:}
+    port: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_PORT:}
+    username: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_USERNAME:}
+    password: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_PASSWORD:}
+
+  sendgrid:
+    api-key: ${vcap.services.cf-app-inventory-report-secrets.credentials.SENDGRID_API-KEY:}
+
+cf:
+  apiHost: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_API-HOST:api.run.pcfone.io}
+  username: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_USERNAME}
+  password: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSWORD}
+
+mail:
+  from: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_FROM:admin@pcfone.io}
+  recipients: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_RECIPIENTS:}
+
+cron: ${vcap.services.cf-app-inventory-report-secrets.credentials.CRON:0 0 8 * * 1}
+
+notification:
+  engine: ${vcap.services.cf-app-inventory-report-secrets.credentials.NOTIFICATION_ENGINE:none}

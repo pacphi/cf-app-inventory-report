@@ -30,7 +30,7 @@ git clone https://github.com/pacphi/cf-app-inventory-report.git
 
 ## How to configure
 
-Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications.
+Make a copy of then edit the contents of the `application.yml` file located in `src/main/resources`.  A best practice is to append a suffix representating the target deployment environment (e.g., `application-pws.yml`, `application-pcfone.yml`). You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications.
 
 > You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and/or [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
 
@@ -91,13 +91,23 @@ Based on choice the authorization token provider
 
 ### to choose between backends
 
-Set `spring.profiles.active` to one of either `mongo` or `jdbc`.
+If you edited the contents of `application.yml` then you could set `spring.profiles.active` to one of either `mongo` or `jdbc`.
 
 E.g., you could start the app with an HSQL backend using
 
 ```
 ./gradlew bootRun -Dspring.profiles.active=jdbc
 ```
+
+If you copied and appended a suffix to the original `application.yml` then you would set `spring.profiles.active` to be that suffix 
+
+E.g., if you had a configuration named `application-pws.yml`
+
+```
+./gradlew bootRun -Dspring.profiles.active=pws
+```
+
+> See the [samples](samples) directory for some examples of configuration when deploying to [Pivotal Web Services](https://login.run.pivotal.io/login) or [PCFOne](https://login.run.pcfone.io/login).
 
 ### to override the default download URL for Embedded Mongo
 
