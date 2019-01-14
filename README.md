@@ -1,6 +1,6 @@
 # Pivotal Application Service > Application Inventory Report
 
-[![Build Status](https://travis-ci.org/pacphi/cf-app-inventory-report.svg?branch=app-deploy)](https://travis-ci.org/pacphi/cf-app-inventory-report) [![Known Vulnerabilities](https://snyk.io/test/github/pacphi/cf-app-inventory-report/badge.svg)](https://snyk.io/test/github/pacphi/cf-app-inventory-report)
+[![Build Status](https://travis-ci.org/pacphi/cf-app-inventory-report.svg?branch=master)](https://travis-ci.org/pacphi/cf-app-inventory-report) [![Known Vulnerabilities](https://snyk.io/test/github/pacphi/cf-app-inventory-report/badge.svg)](https://snyk.io/test/github/pacphi/cf-app-inventory-report)
 
 This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [HSQL](http://hsqldb.org) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis.
 
