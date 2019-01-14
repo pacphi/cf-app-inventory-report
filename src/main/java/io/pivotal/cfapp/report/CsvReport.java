@@ -8,7 +8,7 @@ import io.pivotal.cfapp.domain.AppMetrics;
 import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
-import io.pivotal.cfapp.task.AppInfoRetrievedEvent;
+import io.pivotal.cfapp.task.AppDetailRetrievedEvent;
 
 public class CsvReport  {
     
@@ -28,7 +28,7 @@ public class CsvReport  {
         return preamble.toString();
     }
     
-    public String generateDetail(AppInfoRetrievedEvent event) {
+    public String generateDetail(AppDetailRetrievedEvent event) {
         StringBuffer details = new StringBuffer();
         details.append("\n");
         details.append(AppDetail.headers());
@@ -41,7 +41,7 @@ public class CsvReport  {
         return details.toString();
     }
     
-    public String generateSummary(AppInfoRetrievedEvent event) {
+    public String generateSummary(AppDetailRetrievedEvent event) {
         AppMetrics metrics = new AppMetrics(event.getDetail());
         StringBuffer summary = new StringBuffer();
         

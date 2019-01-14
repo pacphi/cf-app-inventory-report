@@ -11,19 +11,21 @@ import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
-import io.pivotal.cfapp.repository.JdbcAppInfoRepository;
+import io.pivotal.cfapp.repository.JdbcAppDetailRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Profile("jdbc")
 @Service
-public class JdbcAppInfoService implements AppInfoService {
+public class JdbcAppDetailService implements AppDetailService {
 
-	private JdbcAppInfoRepository repo;
+	private JdbcAppDetailRepository repo;
 	private AppDetailAggregator aggregator;
 
 	@Autowired
-	public JdbcAppInfoService(JdbcAppInfoRepository repo, AppDetailAggregator aggregator) {
+	public JdbcAppDetailService(
+			JdbcAppDetailRepository repo, 
+			AppDetailAggregator aggregator) {
 		this.repo = repo;
 		this.aggregator = aggregator;
 	}

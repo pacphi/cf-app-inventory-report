@@ -6,7 +6,9 @@ import org.cloudfoundry.reactor.DefaultConnectionContext;
 import org.cloudfoundry.reactor.TokenProvider;
 import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.cloudfoundry.reactor.doppler.ReactorDopplerClient;
+import org.cloudfoundry.reactor.tokenprovider.OneTimePasscodeTokenProvider;
 import org.cloudfoundry.reactor.tokenprovider.PasswordGrantTokenProvider;
+import org.cloudfoundry.reactor.tokenprovider.RefreshTokenGrantTokenProvider;
 import org.cloudfoundry.reactor.uaa.ReactorUaaClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -14,13 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import com.sendgrid.SendGrid;
-
-import io.pivotal.cfapp.notifier.JavaMailNotifier;
-import io.pivotal.cfapp.notifier.SendGridNotifier;
 
 @EnableScheduling
 @Configuration
@@ -30,14 +26,24 @@ public class AppConfig {
     DefaultConnectionContext connectionContext(AppSettings settings) {
         return DefaultConnectionContext.builder()
             .apiHost(settings.getApiHost())
+            .skipSslValidation(settings.isSslValidationSkipped())
             .build();
     }
 
     @Bean
-    PasswordGrantTokenProvider tokenProvider(AppSettings settings) {
+    @ConditionalOnProperty(prefix="token", name="provider", havingValue="userpass", matchIfMissing=true)
+    TokenProvider tokenProvider(AppSettings settings) {
         return PasswordGrantTokenProvider.builder()
             .username(settings.getUsername())
             .password(settings.getPassword())
+            .build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix="token", name="provider", havingValue="sso")
+    TokenProvider onetTimeTokenProvider(AppSettings settings) {
+        return OneTimePasscodeTokenProvider.builder()
+            .passcode(settings.getPasscode())
             .build();
     }
 
@@ -84,17 +90,4 @@ public class AppConfig {
         return eventMulticaster;
     }
 
-    @Bean
-    @ConditionalOnProperty(prefix="notification", name="engine", havingValue="java-mail")
-    public JavaMailNotifier javaMailNotifier(
-            AppSettings appSettings, MailSettings mailSettings, JavaMailSender javaMailSender) {
-        return new JavaMailNotifier(appSettings, mailSettings, javaMailSender);
-    }
-
-    @Bean
-    @ConditionalOnProperty(prefix="notification", name="engine", havingValue="sendgrid")
-    public SendGridNotifier sendGridNotifier(
-            AppSettings appSettings, MailSettings mailSettings, SendGrid sendGrid) {
-        return new SendGridNotifier(appSettings, mailSettings, sendGrid);
-    }
 }

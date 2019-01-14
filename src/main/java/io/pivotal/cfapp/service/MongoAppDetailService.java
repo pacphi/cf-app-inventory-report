@@ -11,19 +11,21 @@ import io.pivotal.cfapp.domain.BuildpackCount;
 import io.pivotal.cfapp.domain.DockerImageCount;
 import io.pivotal.cfapp.domain.OrganizationCount;
 import io.pivotal.cfapp.repository.AppDetailAggregator;
-import io.pivotal.cfapp.repository.MongoAppInfoRepository;
+import io.pivotal.cfapp.repository.MongoAppDetailRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Profile("mongo")
 @Service
-public class MongoAppInfoService implements AppInfoService {
+public class MongoAppDetailService implements AppDetailService {
 
-	private MongoAppInfoRepository repo;
+	private MongoAppDetailRepository repo;
 	private AppDetailAggregator aggregator;
 
 	@Autowired
-	public MongoAppInfoService(MongoAppInfoRepository repo, AppDetailAggregator aggregator) {
+	public MongoAppDetailService(
+			MongoAppDetailRepository repo, 
+			AppDetailAggregator aggregator) {
 		this.repo = repo;
 		this.aggregator = aggregator;
 	}

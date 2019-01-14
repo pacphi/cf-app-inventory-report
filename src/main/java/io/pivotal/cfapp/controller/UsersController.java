@@ -1,6 +1,5 @@
 package io.pivotal.cfapp.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.pivotal.cfapp.domain.SpaceUsers;
 import io.pivotal.cfapp.service.SpaceUsersService;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController

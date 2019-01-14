@@ -18,9 +18,9 @@ Optional
 
 ## Tools
 
-* [git](https://git-scm.com/downloads) 2.19.2 or better
+* [git](https://git-scm.com/downloads) 2.20.1 or better
 * [JDK](http://openjdk.java.net/install/) 11 or better
-* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.40.0 or better
+* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.41.0 or better
 
 ## Clone
 
@@ -30,7 +30,7 @@ git clone https://github.com/pacphi/cf-app-inventory-report.git
 
 ## How to configure
 
-Edit the contents of the `application.yml` file located in `src/main/resources`.  You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications.
+Make a copy of then edit the contents of the `application.yml` file located in `src/main/resources`.  A best practice is to append a suffix representating the target deployment environment (e.g., `application-pws.yml`, `application-pcfone.yml`). You will need to provide administrator credentials to Apps Manager for the foundation if you want to get a complete inventory of applications.
 
 > You really should not bundle configuration with the application. To take some of the sting away, you might consider externalizing and/or [encrypting](https://blog.novatec-gmbh.de/encrypted-properties-spring/) this configuration.
 
@@ -58,8 +58,19 @@ We'll use this file later as input configuration for the creation of either a [c
 At a minimum you should supply values for the following keys
 
 * `cf.apiHost` - a Pivotal Application Service API endpoint
+* `token.provider` - Authorization token provider, options are: `userpass` or `sso`
+
+Based on choice the authorization token provider
+
+#### Username and password
+
 * `cf.username` - a Pivotal Application Service account username (typically an administrator account)
 * `cf.password` - a Pivotal Application Service account password
+
+#### Single-sign on
+
+* `cf.passcode` - a temporary one-time passcode
+
 * `notification.engine` - email provider, options are: `none`, `java-mail` or `sendgrid`
 
 > If you set the email provider to `none`, then no email will be delivered
@@ -80,13 +91,23 @@ At a minimum you should supply values for the following keys
 
 ### to choose between backends
 
-Set `spring.profiles.active` to one of either `mongo` or `jdbc`.
+If you edited the contents of `application.yml` then you could set `spring.profiles.active` to one of either `mongo` or `jdbc`.
 
 E.g., you could start the app with an HSQL backend using
 
 ```
 ./gradlew bootRun -Dspring.profiles.active=jdbc
 ```
+
+If you copied and appended a suffix to the original `application.yml` then you would set `spring.profiles.active` to be that suffix 
+
+E.g., if you had a configuration file named `application-pws.yml`
+
+```
+./gradlew bootRun -Dspring.profiles.active=pws
+```
+
+> See the [samples](samples) directory for some examples of configuration when deploying to [Pivotal Web Services](https://login.run.pivotal.io/login) or [PCFOne](https://login.run.pcfone.io/login).
 
 ### to override the default download URL for Embedded Mongo
 
@@ -116,6 +137,17 @@ would download the Mongo executable from `https://fastdl.mongodb.org/osx/mongodb
 
 Update the value of the `cron` property in `application.yml`.  Consult this [article](https://www.baeldung.com/spring-scheduled-tasks) and the [Javadoc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html#cron--) to understand how to tune it for your purposes.
 
+
+### Troubleshooting
+
+To have access to a database management [console](http://hsqldb.org/doc/guide/running-chapt.html#rgc_access_tools) which would allow you to execute queries against the in-memory database, you will need to set an additional JVM argument.  
+
+```
+-Djava.awt.headless=false
+```
+
+> Note: this is not an available option when deploying to a PAS foundation.
+
 ## How to Build
 
 ```
@@ -133,12 +165,46 @@ where `{backend_provider}` is either `mongo` or `jdbc`
 
 ## How to deploy to Pivotal Application Service
 
+### with Username and password authorization 
+
+The following instructions explain how to get started when `token.provider` is set to `userpass`
+
 Authenticate to a foundation using the API endpoint.
-> E.g., login to [Pivotal Web Services](https://run.pivotal.io)
+> E.g., login to [Pivotal Web Services](https://login.run.pivotal.io)
 
 ```
-cf login -a https:// api.run.pivotal.io
+cf login -a https://api.run.pivotal.io
 ```
+
+### with SSO authorization
+
+The following instructions explain how to get started when `token.provider` is set to `sso`
+
+Authenticate to a foundation using the API endpoint
+
+> E.g., login to [PCF One](https://login.run.pcfone.io)
+
+```
+cf login -a https://api.run.pcfone.io -sso
+```
+
+Visit the link in the password prompt to retrieve a temporary passcode, then complete the login process
+
+> E.g., `https://login.run.pcfone.io/passcode`)
+
+Visit the passcode [link](https://login.run.pcfone.io/passcode) again
+
+Make a note of the passcode because you will need to use it in your `config/secrets.json` which at a minimum should contain
+
+```
+{
+  "TOKEN_PROVIDER": "sso",
+  "CF_API-HOST": "xxxxx",
+  "CF_PASSCODE": "xxxxx",
+}
+```
+
+### using scripts
 
 Deploy the app (w/ a user-provided service instance vending secrets)
 
@@ -158,7 +224,7 @@ Shutdown and destroy the app and service instances
 ./destroy.sh
 ```
 
-## What does the task do?
+## What does this task do?
 
 Utilizes cf CLI to query foundation for application details across all organizations and spaces for which the account is authorized.  Generates an email with a couple of attachments, then sends a copy to each recipient.
 

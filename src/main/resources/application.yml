@@ -17,39 +17,41 @@ cf:
   apiHost: api.run.pivotal.io
   username: replace_me
   password: replace_me
-
+  sslValidationSkipped: false
 
 # Uncomment and (re)set the values for spring.mail.username, spring.mail.password
 # mail.from, and mail.recipients
 # Configuration below is set up to work w/ a Gmail account
 # @see http://www.baeldung.com/spring-email
-spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: replace_me
-    password: replace_me
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-  # SendGrid API key (alternative to username/password).
-  sendgrid:
-    api-key: replace_me
+# spring:
+#   mail:
+#     host: smtp.gmail.com
+#     port: 587
+#     username: replace_me
+#     password: replace_me
+#     properties:
+#       mail:
+#         smtp:
+#           auth: true
+#           starttls:
+#             enable: true
 
-mail:
-  from: replace_me
-  recipients: 
+# SendGrid API key (alternative to username/password).
+#   sendgrid:
+#     api-key: replace_me
+
+# mail:
+#   from: replace_me
+#   recipients: 
 #  - recipient_account
-  subject: "PCF Application Inventory Report"
+#   subject: "PCF Application Inventory Report"
 
 logging:
   level:
     de.flapdoodle.embed.mongo: INFO
     org.springframework: INFO
     com.sendgrid: DEBUG
+    org.cloudfoundry.reactor: DEBUG
 
 # Options are: none, java-mail or sendgrid
 notification:
@@ -57,7 +59,7 @@ notification:
 
 # Set schedule for this task to adhere to
 # @see https://crontab.guru for help, first parameter is seconds
-cron: "0 * * * * *"
+cron: "0 0 8 * * 1"
 
 management:
   endpoints:
@@ -122,11 +124,15 @@ cf:
   apiHost: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_API-HOST:api.run.pcfone.io}
   username: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_USERNAME}
   password: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSWORD}
+  passcode: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSCODE}
 
 mail:
   from: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_FROM:admin@pcfone.io}
   recipients: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_RECIPIENTS:}
 
+token:
+  provider: ${vcap.services.cf-app-inventory-report-secrets.credentials.TOKEN_PROVIDER}
+  
 cron: ${vcap.services.cf-app-inventory-report-secrets.credentials.CRON:0 0 8 * * 1}
 
 notification:

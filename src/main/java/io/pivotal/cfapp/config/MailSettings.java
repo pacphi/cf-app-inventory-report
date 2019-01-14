@@ -14,6 +14,6 @@ public class MailSettings {
 
     private String from;
     private List<String> recipients;
-    private String subject;
+    private String subject = "PCF Application Inventory Report";
 
 }
