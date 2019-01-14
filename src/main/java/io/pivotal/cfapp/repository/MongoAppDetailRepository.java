@@ -6,5 +6,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import io.pivotal.cfapp.domain.AppDetail;
 
 @Profile("mongo")
-public interface MongoAppInfoRepository extends ReactiveCrudRepository<AppDetail, String> {
+public interface MongoAppDetailRepository extends ReactiveCrudRepository<AppDetail, String> {
 }

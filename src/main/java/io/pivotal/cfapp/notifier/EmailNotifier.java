@@ -9,11 +9,11 @@ import org.springframework.context.ApplicationListener;
 import io.pivotal.cfapp.config.AppSettings;
 import io.pivotal.cfapp.config.MailSettings;
 import io.pivotal.cfapp.report.CsvReport;
-import io.pivotal.cfapp.task.AppInfoRetrievedEvent;
+import io.pivotal.cfapp.task.AppDetailRetrievedEvent;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class EmailNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
+public abstract class EmailNotifier implements ApplicationListener<AppDetailRetrievedEvent> {
     
     protected final MailSettings mailSettings;
     protected final CsvReport report;
@@ -27,7 +27,7 @@ public abstract class EmailNotifier implements ApplicationListener<AppInfoRetrie
     protected abstract void sendMail(String to, String subject, String body, String detailAttachment, String summaryAttachment) throws MessagingException, IOException;
 
     @Override
-    public void onApplicationEvent(AppInfoRetrievedEvent event) {
+    public void onApplicationEvent(AppDetailRetrievedEvent event) {
         String body = report.generatePreamble();
         String detailAttachment = report.generateDetail(event);
         String summaryAttachment = report.generateSummary(event);

@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component;
 
 import io.pivotal.cfapp.config.AppSettings;
 import io.pivotal.cfapp.report.CsvReport;
-import io.pivotal.cfapp.task.AppInfoRetrievedEvent;
+import io.pivotal.cfapp.task.AppDetailRetrievedEvent;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class ConsoleNotifier implements ApplicationListener<AppInfoRetrievedEvent> {
+public class ConsoleNotifier implements ApplicationListener<AppDetailRetrievedEvent> {
 
 	private final CsvReport report;
 	
@@ -21,8 +21,8 @@ public class ConsoleNotifier implements ApplicationListener<AppInfoRetrievedEven
     }
 
 	@Override
-	public void onApplicationEvent(AppInfoRetrievedEvent event) {
-		log.info(String.join("\n\n", report.generatePreamble(), report.generateDetail(event), report.generateSummary(event)));
+	public void onApplicationEvent(AppDetailRetrievedEvent event) {
+		log.info(String.join("\n\n", report.generatePreamble(), report.generateDetail(event)));
 	}
 
     

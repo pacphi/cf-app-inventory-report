@@ -9,7 +9,7 @@ import io.pivotal.cfapp.domain.OrganizationCount;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface AppInfoService {
+public interface AppDetailService {
 
 	Mono<Void> deleteAll();
 

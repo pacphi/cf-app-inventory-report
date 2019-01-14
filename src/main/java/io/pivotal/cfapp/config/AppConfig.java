@@ -26,6 +26,7 @@ public class AppConfig {
     DefaultConnectionContext connectionContext(AppSettings settings) {
         return DefaultConnectionContext.builder()
             .apiHost(settings.getApiHost())
+            .skipSslValidation(settings.isSslValidationSkipped())
             .build();
     }
 

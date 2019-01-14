@@ -18,9 +18,9 @@ Optional
 
 ## Tools
 
-* [git](https://git-scm.com/downloads) 2.19.2 or better
+* [git](https://git-scm.com/downloads) 2.20.1 or better
 * [JDK](http://openjdk.java.net/install/) 11 or better
-* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.40.0 or better
+* [cf](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) CLI 6.41.0 or better
 
 ## Clone
 
@@ -101,7 +101,7 @@ E.g., you could start the app with an HSQL backend using
 
 If you copied and appended a suffix to the original `application.yml` then you would set `spring.profiles.active` to be that suffix 
 
-E.g., if you had a configuration named `application-pws.yml`
+E.g., if you had a configuration file named `application-pws.yml`
 
 ```
 ./gradlew bootRun -Dspring.profiles.active=pws
@@ -137,6 +137,17 @@ would download the Mongo executable from `https://fastdl.mongodb.org/osx/mongodb
 
 Update the value of the `cron` property in `application.yml`.  Consult this [article](https://www.baeldung.com/spring-scheduled-tasks) and the [Javadoc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html#cron--) to understand how to tune it for your purposes.
 
+
+### Troubleshooting
+
+To have access to a database management [console](http://hsqldb.org/doc/guide/running-chapt.html#rgc_access_tools) which would allow you to execute queries against the in-memory database, you will need to set an additional JVM argument.  
+
+```
+-Djava.awt.headless=false
+```
+
+> Note: this is not an available option when deploying to a PAS foundation.
+
 ## How to Build
 
 ```
@@ -170,17 +181,18 @@ cf login -a https://api.run.pivotal.io
 The following instructions explain how to get started when `token.provider` is set to `sso`
 
 Authenticate to a foundation using the API endpoint
-> E.g., login to [Pivotal Web Services](https://login.run.pcfone.io)
+
+> E.g., login to [PCF One](https://login.run.pcfone.io)
 
 ```
 cf login -a https://api.run.pcfone.io -sso
 ```
 
-Visit the link in the password prompt to retrieve a temporary passcode (e.g., https://login.run.pcfone.io/passcode)
+Visit the link in the password prompt to retrieve a temporary passcode, then complete the login process
 
-> Complete the login process
+> E.g., `https://login.run.pcfone.io/passcode`)
 
-Visit https://login.run.pcfone.io/passcode again
+Visit the passcode [link](https://login.run.pcfone.io/passcode) again
 
 Make a note of the passcode because you will need to use it in your `config/secrets.json` which at a minimum should contain
 
@@ -191,6 +203,8 @@ Make a note of the passcode because you will need to use it in your `config/secr
   "CF_PASSCODE": "xxxxx",
 }
 ```
+
+### using scripts
 
 Deploy the app (w/ a user-provided service instance vending secrets)
 
@@ -210,7 +224,7 @@ Shutdown and destroy the app and service instances
 ./destroy.sh
 ```
 
-## What does the task do?
+## What does this task do?
 
 Utilizes cf CLI to query foundation for application details across all organizations and spaces for which the account is authorized.  Generates an email with a couple of attachments, then sends a copy to each recipient.
 

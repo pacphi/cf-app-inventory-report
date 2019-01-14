@@ -17,7 +17,7 @@ cf:
   apiHost: api.run.pivotal.io
   username: replace_me
   password: replace_me
-
+  sslValidationSkipped: false
 
 # Uncomment and (re)set the values for spring.mail.username, spring.mail.password
 # mail.from, and mail.recipients
@@ -124,11 +124,15 @@ cf:
   apiHost: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_API-HOST:api.run.pcfone.io}
   username: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_USERNAME}
   password: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSWORD}
+  passcode: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSCODE}
 
 mail:
   from: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_FROM:admin@pcfone.io}
   recipients: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_RECIPIENTS:}
 
+token:
+  provider: ${vcap.services.cf-app-inventory-report-secrets.credentials.TOKEN_PROVIDER}
+  
 cron: ${vcap.services.cf-app-inventory-report-secrets.credentials.CRON:0 0 8 * * 1}
 
 notification:
