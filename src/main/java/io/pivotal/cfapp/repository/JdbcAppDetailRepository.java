@@ -3,9 +3,6 @@ package io.pivotal.cfapp.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.davidmoten.rx.jdbc.Database;
 import org.springframework.beans.factory.annotation.Autowired;

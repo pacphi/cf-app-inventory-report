@@ -145,7 +145,7 @@ public class AppDetailTask implements ApplicationRunner {
 
     private String toTruncatedString(List<String> urls) {
     	String rawData = String.join(",", urls);
-    	return rawData.length() <= 1000 ? rawData : rawData.substring(0, 1000);  
+    	return rawData.length() <= 2000 ? rawData : rawData.substring(0, 2000);  
     }
 
     protected Mono<AppDetail> enrichWithAppEvent(AppDetail detail) {
