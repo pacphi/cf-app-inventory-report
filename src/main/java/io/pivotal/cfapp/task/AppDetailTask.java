@@ -46,12 +46,11 @@ public class AppDetailTask implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        runTask();
+        collect();
     }
-
-    @Scheduled(cron = "${cron}")
-    protected void runTask() {
-        Hooks.onOperatorDebug();
+    
+    public void collect() {
+    	Hooks.onOperatorDebug();
         service
             .deleteAll()
             .thenMany(getOrganizations())
@@ -72,6 +71,11 @@ public class AppDetailTask implements ApplicationRunner {
                         .dockerImages(service.countApplicationsByDockerImage())
                 )
             );
+    }
+
+    @Scheduled(cron = "${cron}")
+    protected void runTask() {
+        collect();
     }
 
     protected Flux<AppRequest> getOrganizations() {
