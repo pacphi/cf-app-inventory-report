@@ -4,6 +4,8 @@
 
 This is a Spring Boot application that employs the Reactive support in both the [Pivotal Application Service Java Client](https://github.com/cloudfoundry/cf-java-client) and your choice of either [Spring Boot Starter Data Mongodb](https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#mongo.reactive) or [rxjava2-jdbc](https://github.com/davidmoten/rxjava2-jdbc) with an [HSQL](http://hsqldb.org) backend.  These libraries are employed to generate custom application inventory detail and summary reports from a target foundation.  An email will be sent to recipient(s) with those reports attached on a scheduled basis.
 
+> While the cf-app-inventory-report does not take the place of an official foundation [Accounting Report](https://docs.pivotal.io/pivotalcf/2-4/opsguide/accounting-report-apps-man.html), it does provide a much more detailed snapshot of all the applications that were currently running at the time of collection.  The Accounting Report is focussed on calculating aggregates (on a monthly basis) such as: (a) the total hours of application instance usage and (b) the largest # of application instances running (a.k.a. maximum concurrent application instances).
+
 ## Prerequisites
 
 Required
