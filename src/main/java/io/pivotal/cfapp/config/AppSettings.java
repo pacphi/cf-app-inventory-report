@@ -14,6 +14,7 @@ public class AppSettings {
     private boolean sslValidationSkipped;
     private String username;
     private String password;
-    private String passcode;
+    // this is the value of RefreshToken within ~/.cf/config.json after one authenticates w/ cf login -a {api_endpoint} -sso
+    private String refreshToken;
 
 }

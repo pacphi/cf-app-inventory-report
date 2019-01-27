@@ -124,7 +124,7 @@ cf:
   apiHost: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_API-HOST:api.run.pcfone.io}
   username: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_USERNAME}
   password: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSWORD}
-  passcode: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_PASSCODE}
+  refreshToken: ${vcap.services.cf-app-inventory-report-secrets.credentials.CF_REFRESH-TOKEN}
 
 mail:
   from: ${vcap.services.cf-app-inventory-report-secrets.credentials.MAIL_FROM:admin@pcfone.io}
@@ -137,3 +137,8 @@ cron: ${vcap.services.cf-app-inventory-report-secrets.credentials.CRON:0 0 8 * *
 
 notification:
   engine: ${vcap.services.cf-app-inventory-report-secrets.credentials.NOTIFICATION_ENGINE:none}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${vcap.services.cf-app-inventory-report-secrets.credentials.EXPOSED_ACTUATOR_ENDPOINTS:info,health,metrics,scheduledtasks,loggers}

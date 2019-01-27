@@ -6,8 +6,8 @@ import org.cloudfoundry.reactor.DefaultConnectionContext;
 import org.cloudfoundry.reactor.TokenProvider;
 import org.cloudfoundry.reactor.client.ReactorCloudFoundryClient;
 import org.cloudfoundry.reactor.doppler.ReactorDopplerClient;
-import org.cloudfoundry.reactor.tokenprovider.OneTimePasscodeTokenProvider;
 import org.cloudfoundry.reactor.tokenprovider.PasswordGrantTokenProvider;
+import org.cloudfoundry.reactor.tokenprovider.RefreshTokenGrantTokenProvider;
 import org.cloudfoundry.reactor.uaa.ReactorUaaClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +40,9 @@ public class AppConfig {
 
     @Bean
     @ConditionalOnProperty(prefix="token", name="provider", havingValue="sso")
-    TokenProvider onetTimeTokenProvider(AppSettings settings) {
-        return OneTimePasscodeTokenProvider.builder()
-            .passcode(settings.getPasscode())
+    TokenProvider refreshGrantTokenProvider(AppSettings settings) {
+        return RefreshTokenGrantTokenProvider.builder()
+            .token(settings.getRefreshToken())
             .build();
     }
 
